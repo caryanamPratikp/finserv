@@ -211,16 +211,32 @@ const Login = () => {
             </div>
 
             <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-[#0b2a4a] text-white rounded-lg font-medium hover:bg-[#081f36] transition"
-            >
+  type="submit"
+  disabled={loading}
+  className="w-full py-3 bg-[#0b2a4a] text-white rounded-lg font-medium hover:bg-[#081f36] transition"
+>
+  {loading
+    ? "Signing in..."
+    : "Sign In →"}
+</button>
 
-              {loading
-                ? "Signing in..."
-                : "Sign In →"}
+{/* REGISTER LINK */}
 
-            </button>
+<div className="mt-6 text-center">
+
+  <p className="text-sm text-gray-500">
+    Don’t have an account?
+  </p>
+
+  <button
+    type="button"
+    onClick={() => navigate("/register")}
+    className="mt-2 text-[#0b2a4a] font-semibold hover:text-[#27D3C3] transition"
+  >
+    Create Account
+  </button>
+
+</div>
 
           </form>
 
