@@ -1312,5 +1312,5 @@ const [residentialType, setResidentialType] =
     </div>
   );
 };
-
+ 
 export default Dashboard;
