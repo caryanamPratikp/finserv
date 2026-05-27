@@ -7,7 +7,7 @@ import Sidebar from "../components/Sidebar";
 const Dashboard = () => {
 
 
-  /* REMARKS MODAL */
+/* REMARKS MODAL */
 
 const [showRemarksModal, setShowRemarksModal] =
   useState(false);
@@ -973,37 +973,77 @@ const [residentialType, setResidentialType] =
 
       <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
 
-        <div>
+  <div>
 
-          <h2 className="text-2xl font-bold text-[#0B2A4A]">
-            Loan Journey
-          </h2>
+    <h2 className="text-2xl font-bold text-[#0B2A4A]">
+      Loan Journey
+    </h2>
 
-          <p className="text-sm text-gray-500 mt-1">
-            Your application is moving smoothly through verification
-          </p>
+    <p className="text-sm text-gray-500 mt-1">
+      Your application is moving smoothly through verification
+    </p>
 
-        </div>
+  </div>
 
-        {/* STATUS PILL */}
+  {/* RIGHT SIDE */}
 
-        <div
-          className="bg-gradient-to-r from-[#EAFBF8] to-[#F4FFFD]
-          border border-[#27D3C3]/20
-          px-5 py-3 rounded-2xl"
-        >
+  <div className="flex items-center gap-3">
 
-          <p className="text-[11px] uppercase tracking-wider text-gray-500">
-            Current Stage
-          </p>
+    {/* STATUS PILL */}
 
-          <h3 className="text-sm font-bold text-[#0B2A4A] mt-1">
-            {userData.status}
-          </h3>
+    <div
+      className="bg-gradient-to-r from-[#EAFBF8] to-[#F4FFFD]
+      border border-[#27D3C3]/20
+      px-5 py-3 rounded-2xl"
+    >
 
-        </div>
+      <p className="text-[11px] uppercase tracking-wider text-gray-500">
+        Current Stage
+      </p>
 
-      </div>
+      <h3 className="text-sm font-bold text-[#0B2A4A] mt-1">
+        {userData.status}
+      </h3>
+
+    </div>
+
+    {/* REMARK BUTTON */}
+
+    <button
+      onClick={() => {
+        setSelectedRemark(
+          userRemarkData.remark ||
+            "No remarks added by admin."
+        );
+
+        setShowRemarksModal(true);
+      }}
+      className="relative w-11 h-11 rounded-full
+      bg-[#F4F6F9]
+      hover:bg-[#EAFBF8]
+      border border-gray-200
+      flex items-center justify-center
+      transition-all duration-200"
+    >
+
+      💬
+
+      {/* RED DOT */}
+
+      {userRemarkData.hasRemark && (
+        <span
+          className="absolute top-1 right-1
+          w-3 h-3 rounded-full
+          bg-red-500 border-2 border-white
+          animate-pulse"
+        ></span>
+      )}
+
+    </button>
+
+  </div>
+
+</div>
 
       {/* TIMELINE */}
 
@@ -1199,7 +1239,72 @@ const [residentialType, setResidentialType] =
   </div>
 
 )}
+{/* REMARKS MODAL */}
 
+{showRemarksModal && (
+
+  <div
+    className="fixed inset-0 z-50
+    bg-black/40 backdrop-blur-sm
+    flex items-center justify-center p-4"
+  >
+
+    <div
+      className="bg-white w-full max-w-md
+      rounded-3xl p-6 shadow-2xl
+      animate-in fade-in zoom-in duration-200"
+    >
+
+      {/* HEADER */}
+
+      <div className="flex items-center justify-between mb-5">
+
+        <div>
+
+          <h2 className="text-xl font-bold text-[#0B2A4A]">
+            Admin Remarks
+          </h2>
+
+          <p className="text-xs text-gray-500 mt-1">
+            Read only updates from admin
+          </p>
+
+        </div>
+
+        <button
+          onClick={() =>
+            setShowRemarksModal(false)
+          }
+          className="w-9 h-9 rounded-full
+          bg-[#F4F6F9]
+          hover:bg-gray-200
+          flex items-center justify-center"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      {/* REMARK BOX */}
+
+      <div
+        className="min-h-[170px]
+        bg-[#F8FAFC]
+        border border-gray-200
+        rounded-2xl p-5"
+      >
+
+        <p className="text-sm leading-7 text-gray-700 whitespace-pre-line">
+          {selectedRemark}
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
         </div>
 
       </div>
