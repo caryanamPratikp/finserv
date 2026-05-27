@@ -3,6 +3,44 @@ import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+
+  /* SETTINGS STATES */
+
+const [showPasswordForm, setShowPasswordForm] =
+  useState(false);
+
+const [showPhoneModal, setShowPhoneModal] =
+  useState(false);
+
+const [showEmailModal, setShowEmailModal] =
+  useState(false);
+
+const [phoneOtpStep, setPhoneOtpStep] =
+  useState(false);
+
+const [emailOtpStep, setEmailOtpStep] =
+  useState(false);
+
+const [profileData, setProfileData] =
+  useState({
+    name: "Shiv Motors",
+    phone: "9876543210",
+    email: "dealer@gmail.com",
+  });
+
+const [phoneForm, setPhoneForm] =
+  useState({
+    currentPhone: "9876543210",
+    newPhone: "",
+    otp: "",
+  });
+
+const [emailForm, setEmailForm] =
+  useState({
+    currentEmail: "dealer@gmail.com",
+    newEmail: "",
+    otp: "",
+  });
   const navigate = useNavigate();
 
   const [sidebarOpen, setSidebarOpen] =
@@ -34,6 +72,7 @@ const [showRemarksModal, setShowRemarksModal] =
 const [selectedRemark, setSelectedRemark] =
   useState("");
 
+  
   /* LIVE FEED */
 
   const updates = [
@@ -1094,6 +1133,241 @@ const weekLabels = [
 
   </div>
 )}
+
+{/* SETTINGS */}
+
+{activeMenu === "Settings" && (
+
+  <div className="max-w-4xl mx-auto space-y-6">
+
+    {/* HEADER */}
+
+    <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Dealer Settings
+      </h2>
+
+      <p className="text-sm text-gray-500 mt-1">
+        Manage dealer profile and security
+      </p>
+
+    </div>
+
+    {/* PROFILE CARD */}
+
+    <div className="bg-white rounded-3xl p-8 shadow-sm">
+
+      {/* TOP */}
+
+      <div className="flex items-center gap-5 mb-8">
+
+        <div
+          className="w-20 h-20 rounded-full
+          bg-[#EAFBF8]
+          flex items-center justify-center
+          text-3xl"
+        >
+          🏢
+        </div>
+
+        <div>
+
+          <h3 className="text-2xl font-bold text-[#0B2A4A]">
+            {profileData.name}
+          </h3>
+
+          <p className="text-sm text-gray-500 mt-1">
+            {profileData.email}
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* FORM */}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* NAME */}
+
+        <div>
+
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Dealer Name
+          </label>
+
+          <input
+            type="text"
+            value={profileData.name}
+            onChange={(e) =>
+              setProfileData({
+                ...profileData,
+                name: e.target.value,
+              })
+            }
+            className="w-full bg-[#F8FAFC]
+            border border-gray-200
+            rounded-2xl px-5 py-4
+            outline-none"
+          />
+
+        </div>
+
+        {/* PHONE */}
+
+        <div>
+
+          <div className="flex items-center justify-between mb-2">
+
+            <label className="text-sm font-semibold text-[#0B2A4A]">
+              Phone Number
+            </label>
+
+            <button
+              onClick={() =>
+                setShowPhoneModal(true)
+              }
+              className="w-8 h-8 rounded-full
+              bg-[#EAFBF8]
+              flex items-center justify-center"
+            >
+              ✏️
+            </button>
+
+          </div>
+
+          <input
+            type="text"
+            value={profileData.phone}
+            readOnly
+            className="w-full bg-[#F8FAFC]
+            border border-gray-200
+            rounded-2xl px-5 py-4"
+          />
+
+        </div>
+
+        {/* EMAIL */}
+
+        <div className="md:col-span-2">
+
+          <div className="flex items-center justify-between mb-2">
+
+            <label className="text-sm font-semibold text-[#0B2A4A]">
+              Email Address
+            </label>
+
+            <button
+              onClick={() =>
+                setShowEmailModal(true)
+              }
+              className="w-8 h-8 rounded-full
+              bg-[#EAFBF8]
+              flex items-center justify-center"
+            >
+              ✏️
+            </button>
+
+          </div>
+
+          <input
+            type="email"
+            value={profileData.email}
+            readOnly
+            className="w-full bg-[#F8FAFC]
+            border border-gray-200
+            rounded-2xl px-5 py-4"
+          />
+
+        </div>
+
+      </div>
+
+      {/* BUTTONS */}
+
+      <div className="flex gap-4 mt-8">
+
+        <button
+          className="bg-[#0B2A4A]
+          text-white px-6 py-3
+          rounded-2xl font-semibold"
+        >
+          Save Changes
+        </button>
+
+        <button
+          onClick={() =>
+            setShowPasswordForm(
+              !showPasswordForm
+            )
+          }
+          className="bg-[#EAFBF8]
+          text-[#0B2A4A]
+          px-6 py-3 rounded-2xl
+          font-semibold"
+        >
+          Update Password
+        </button>
+
+      </div>
+
+      {/* PASSWORD FORM */}
+
+      {showPasswordForm && (
+
+        <div className="mt-8 border-t pt-8">
+
+          <h3 className="text-lg font-bold text-[#0B2A4A] mb-5">
+            Change Password
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+            <input
+              type="password"
+              placeholder="Current Password"
+              className="bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4"
+            />
+
+            <input
+              type="password"
+              placeholder="New Password"
+              className="bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4"
+            />
+
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              className="bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4"
+            />
+
+          </div>
+
+          <button
+            className="mt-5 bg-[#27D3C3]
+            text-[#0B2A4A]
+            px-6 py-3 rounded-2xl
+            font-bold"
+          >
+            Save Password
+          </button>
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+
+)}
         </div>
       </div>
 
@@ -1215,7 +1489,327 @@ const weekLabels = [
             )}
           </div>
         </div>
+
+        
       )}
+
+      {/* PHONE UPDATE MODAL */}
+
+{showPhoneModal && (
+  <div
+    className="fixed inset-0 bg-black/40
+    flex items-center justify-center z-50"
+  >
+    <div className="bg-white rounded-3xl p-8 w-full max-w-md relative">
+
+      {/* CROSS BUTTON */}
+
+      <button
+        onClick={() => {
+          setShowPhoneModal(false);
+          setPhoneOtpStep(false);
+        }}
+        className="absolute top-5 right-5
+        w-10 h-10 rounded-full
+        bg-[#F4F6F9]
+        hover:bg-red-100
+        text-[#0B2A4A]
+        hover:text-red-600
+        text-xl font-bold
+        flex items-center justify-center
+        transition"
+      >
+        ×
+      </button>
+
+      {/* HEADER */}
+
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[#0B2A4A]">
+          Update Phone Number
+        </h2>
+
+        <p className="text-sm text-gray-500 mt-1">
+          Verify OTP to change phone number
+        </p>
+      </div>
+
+      {/* FORM */}
+
+      <div className="space-y-5">
+
+        {/* CURRENT PHONE */}
+
+        <div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Current Phone
+          </label>
+
+          <input
+            type="text"
+            value={phoneForm.currentPhone}
+            readOnly
+            className="w-full bg-[#F8FAFC]
+            border border-gray-200
+            rounded-2xl px-5 py-4"
+          />
+        </div>
+
+        {/* NEW PHONE */}
+
+        <div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            New Phone
+          </label>
+
+          <input
+            type="text"
+            value={phoneForm.newPhone}
+            onChange={(e) =>
+              setPhoneForm({
+                ...phoneForm,
+                newPhone: e.target.value,
+              })
+            }
+            placeholder="Enter new phone number"
+            className="w-full bg-[#F8FAFC]
+            border border-gray-200
+            rounded-2xl px-5 py-4 outline-none"
+          />
+        </div>
+
+        {/* OTP FIELD */}
+
+        {phoneOtpStep && (
+          <div>
+            <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+              Enter OTP
+            </label>
+
+            <input
+              type="text"
+              value={phoneForm.otp}
+              onChange={(e) =>
+                setPhoneForm({
+                  ...phoneForm,
+                  otp: e.target.value,
+                })
+              }
+              placeholder="Enter OTP"
+              className="w-full bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4 outline-none"
+            />
+          </div>
+        )}
+
+      </div>
+
+      {/* BUTTONS */}
+
+      <div className="flex gap-4 mt-8">
+
+        {!phoneOtpStep ? (
+          <button
+            onClick={() =>
+              setPhoneOtpStep(true)
+            }
+            className="flex-1 bg-[#0B2A4A]
+            text-white py-3 rounded-2xl
+            font-semibold"
+          >
+            Send OTP
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              setProfileData({
+                ...profileData,
+                phone: phoneForm.newPhone,
+              });
+
+              setPhoneForm({
+                currentPhone:
+                  phoneForm.newPhone,
+                newPhone: "",
+                otp: "",
+              });
+
+              setPhoneOtpStep(false);
+              setShowPhoneModal(false);
+            }}
+            className="flex-1 bg-[#27D3C3]
+            text-[#0B2A4A]
+            py-3 rounded-2xl
+            font-bold"
+          >
+            Verify & Update
+          </button>
+        )}
+
+      </div>
+    </div>
+  </div>
+)}
+
+{/* EMAIL UPDATE MODAL */}
+
+{showEmailModal && (
+  <div
+    className="fixed inset-0 bg-black/40
+    flex items-center justify-center z-50"
+  >
+    <div className="bg-white rounded-3xl p-8 w-full max-w-md relative">
+
+      {/* CROSS BUTTON */}
+
+      <button
+        onClick={() => {
+          setShowEmailModal(false);
+          setEmailOtpStep(false);
+        }}
+        className="absolute top-5 right-5
+        w-10 h-10 rounded-full
+        bg-[#F4F6F9]
+        hover:bg-red-100
+        text-[#0B2A4A]
+        hover:text-red-600
+        text-xl font-bold
+        flex items-center justify-center
+        transition"
+      >
+        ×
+      </button>
+
+      {/* HEADER */}
+
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-[#0B2A4A]">
+          Update Email Address
+        </h2>
+
+        <p className="text-sm text-gray-500 mt-1">
+          Verify OTP to change email address
+        </p>
+      </div>
+
+      {/* FORM */}
+
+      <div className="space-y-5">
+
+        {/* CURRENT EMAIL */}
+
+        <div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Current Email
+          </label>
+
+          <input
+            type="email"
+            value={emailForm.currentEmail}
+            readOnly
+            className="w-full bg-[#F8FAFC]
+            border border-gray-200
+            rounded-2xl px-5 py-4"
+          />
+        </div>
+
+        {/* NEW EMAIL */}
+
+        <div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            New Email
+          </label>
+
+          <input
+            type="email"
+            value={emailForm.newEmail}
+            onChange={(e) =>
+              setEmailForm({
+                ...emailForm,
+                newEmail: e.target.value,
+              })
+            }
+            placeholder="Enter new email"
+            className="w-full bg-[#F8FAFC]
+            border border-gray-200
+            rounded-2xl px-5 py-4 outline-none"
+          />
+        </div>
+
+        {/* OTP FIELD */}
+
+        {emailOtpStep && (
+          <div>
+            <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+              Enter OTP
+            </label>
+
+            <input
+              type="text"
+              value={emailForm.otp}
+              onChange={(e) =>
+                setEmailForm({
+                  ...emailForm,
+                  otp: e.target.value,
+                })
+              }
+              placeholder="Enter OTP"
+              className="w-full bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4 outline-none"
+            />
+          </div>
+        )}
+
+      </div>
+
+      {/* BUTTONS */}
+
+      <div className="flex gap-4 mt-8">
+
+        {!emailOtpStep ? (
+          <button
+            onClick={() =>
+              setEmailOtpStep(true)
+            }
+            className="flex-1 bg-[#0B2A4A]
+            text-white py-3 rounded-2xl
+            font-semibold"
+          >
+            Send OTP
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              setProfileData({
+                ...profileData,
+                email: emailForm.newEmail,
+              });
+
+              setEmailForm({
+                currentEmail:
+                  emailForm.newEmail,
+                newEmail: "",
+                otp: "",
+              });
+
+              setEmailOtpStep(false);
+              setShowEmailModal(false);
+            }}
+            className="flex-1 bg-[#27D3C3]
+            text-[#0B2A4A]
+            py-3 rounded-2xl
+            font-bold"
+          >
+            Verify & Update
+          </button>
+        )}
+
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };

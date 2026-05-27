@@ -8,25 +8,10 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 
 const Dashboard = () => {
-  const [selectedUser, setSelectedUser] =
-    useState(null);
-
-    const [remarkUser, setRemarkUser] = useState(null);
-const [remarkText, setRemarkText] = useState("");
-
-  const [selectedDealer, setSelectedDealer] =
-    useState(null);
-
-    const [selectedBank, setSelectedBank] =
-  useState(null);
-
-  const [statusUser, setStatusUser] =
-    useState(null);
-
-  const [currentUpdate, setCurrentUpdate] =
-    useState(0);
 
   const navigate = useNavigate();
+
+  /* SIDEBAR */
 
   const [sidebarOpen, setSidebarOpen] =
     useState(true);
@@ -34,7 +19,55 @@ const [remarkText, setRemarkText] = useState("");
   const [activeMenu, setActiveMenu] =
     useState("Dashboard");
 
-  /* USER DATA */
+  /* SETTINGS */
+
+  const [showPasswordForm, setShowPasswordForm] =
+    useState(false);
+
+  const [showPhoneModal, setShowPhoneModal] =
+    useState(false);
+
+  const [showEmailModal, setShowEmailModal] =
+    useState(false);
+
+  const [phoneOtpStep, setPhoneOtpStep] =
+    useState(false);
+
+  const [emailOtpStep, setEmailOtpStep] =
+    useState(false);
+
+  /* PROFILE */
+
+  const [profileData, setProfileData] =
+    useState({
+      name: "Admin",
+      phone: "9876543210",
+      email: "admin@gmail.com",
+      password: "",
+    });
+
+  /* PHONE FORM */
+
+  const [phoneForm, setPhoneForm] =
+    useState({
+      currentPhone: "9876543210",
+      newPhone: "",
+      otp: "",
+    });
+
+  /* EMAIL FORM */
+
+  const [emailForm, setEmailForm] =
+    useState({
+      currentEmail: "rahul@gmail.com",
+      newEmail: "",
+      otp: "",
+    });
+
+  /* USERS */
+
+  const [selectedUser, setSelectedUser] =
+    useState(null);
 
   const [users, setUsers] = useState([
     {
@@ -57,8 +90,8 @@ const [remarkText, setRemarkText] = useState("");
       amount: "₹5,20,000",
       status: "Sent To Bank",
       email: "priya@gmail.com",
-      changed: false,
       address: "Mumbai, Maharashtra",
+      changed: false,
       car: "Hyundai Creta",
       appliedDate: "10 May 2026",
     },
@@ -68,7 +101,8 @@ const [remarkText, setRemarkText] = useState("");
       name: "Amit Joshi",
       mobile: "9123456789",
       amount: "₹12,00,000",
-      status: "Manager Approved The Documents",
+      status:
+        "Manager Approved The Documents",
       email: "amit@gmail.com",
       address: "Nagpur, Maharashtra",
       changed: false,
@@ -77,7 +111,18 @@ const [remarkText, setRemarkText] = useState("");
     },
   ]);
 
-  /* DEALER DATA */
+  /* REMARKS */
+
+  const [remarkUser, setRemarkUser] =
+    useState(null);
+
+  const [remarkText, setRemarkText] =
+    useState("");
+
+  /* DEALERS */
+
+  const [selectedDealer, setSelectedDealer] =
+    useState(null);
 
   const dealers = [
     {
@@ -97,46 +142,47 @@ const [remarkText, setRemarkText] = useState("");
     },
   ];
 
+  /* BANKS */
+
+  const [selectedBank, setSelectedBank] =
+    useState(null);
+
+  const banks = [
+    {
+      id: 1,
+      bank: "HDFC Bank",
+      representative: "Rohit Mehta",
+      mobile: "9876541230",
+      email: "hdfc@bank.com",
+      totalCases: 240,
+      activeCases: 42,
+      approvedCases: 170,
+      rejectedCases: 28,
+    },
+
+    {
+      id: 2,
+      bank: "ICICI Bank",
+      representative: "Sneha Kulkarni",
+      mobile: "9988774455",
+      email: "icici@bank.com",
+      totalCases: 190,
+      activeCases: 30,
+      approvedCases: 140,
+      rejectedCases: 20,
+    },
+  ];
+
+  /* STATUS */
+
+  const [statusUser, setStatusUser] =
+    useState(null);
+
   /* LIVE UPDATES */
-/* BANK DATA */
 
-const banks = [
-  {
-    id: 1,
-    bank: "HDFC Bank",
-    representative: "Rohit Mehta",
-    mobile: "9876541230",
-    email: "hdfc@bank.com",
-    totalCases: 240,
-    activeCases: 42,
-    approvedCases: 170,
-    rejectedCases: 28,
-  },
+  const [currentUpdate, setCurrentUpdate] =
+    useState(0);
 
-  {
-    id: 2,
-    bank: "ICICI Bank",
-    representative: "Sneha Kulkarni",
-    mobile: "9988774455",
-    email: "icici@bank.com",
-    totalCases: 190,
-    activeCases: 30,
-    approvedCases: 140,
-    rejectedCases: 20,
-  },
-
-  {
-    id: 3,
-    bank: "Axis Bank",
-    representative: "Amit Deshmukh",
-    mobile: "9123456780",
-    email: "axis@bank.com",
-    totalCases: 150,
-    activeCases: 18,
-    approvedCases: 110,
-    rejectedCases: 22,
-  },
-];
   const liveUpdates = [
     {
       title: "New User Registered",
@@ -147,68 +193,35 @@ const banks = [
     },
 
     {
-      title: "Bank Requested Documents",
-      description:
-        "HDFC Bank requested additional income proof for Priya Patil.",
-      color:
-        "bg-yellow-100 text-yellow-700",
-    },
-
-    {
       title: "Loan Approved",
       description:
         "ICICI Bank approved Amit Joshi’s car loan.",
       color:
         "bg-green-100 text-green-600",
     },
-
-    {
-      title: "Low CIBIL Alert",
-      description:
-        "Rohit Patil’s CIBIL score is below required limit.",
-      color:
-        "bg-red-100 text-red-600",
-    },
-
-    {
-      title: "Disbursement Initiated",
-      description:
-        "Axis Bank started loan disbursement for Sneha More.",
-      color:
-        "bg-purple-100 text-purple-600",
-    },
-
-    {
-      title: "Dealer Added New Vehicle",
-      description:
-        "Shiv Motors uploaded Mahindra Scorpio N inventory.",
-      color:
-        "bg-cyan-100 text-cyan-600",
-    },
-
-    {
-      title: "Documents Verified",
-      description:
-        "Priya Patil’s KYC verification completed successfully.",
-      color:
-        "bg-emerald-100 text-emerald-600",
-    },
   ];
 
   useEffect(() => {
+
     const interval = setInterval(() => {
+
       setCurrentUpdate((prev) =>
         prev === liveUpdates.length - 1
           ? 0
           : prev + 1
       );
+
     }, 2000);
 
     return () =>
       clearInterval(interval);
+
   }, []);
 
+  /* LOGOUT */
+
   const handleLogout = () => {
+
     localStorage.removeItem("token");
 
     localStorage.removeItem("user");
@@ -219,7 +232,6 @@ const banks = [
       replace: true,
     });
   };
-
   return (
     <div className="flex min-h-screen bg-[#F4F6F9]">
       {/* SIDEBAR */}
@@ -2045,6 +2057,423 @@ ${
 
             </div>
           )}
+
+          {/* SETTINGS */}
+
+
+{showEmailModal && (
+
+  <div
+    className="fixed inset-0 z-50
+    bg-black/40 backdrop-blur-sm
+    flex items-center justify-center p-4"
+  >
+
+    <div
+      className="bg-white w-full max-w-md
+      rounded-3xl p-7 shadow-xl"
+    >
+
+      <div className="flex items-center justify-between mb-6">
+
+        <h2 className="text-xl font-bold text-[#0B2A4A]">
+          Update Email Address
+        </h2>
+
+        <button
+          onClick={() => {
+            setShowEmailModal(false);
+            setEmailOtpStep(false);
+          }}
+          className="text-gray-400 text-xl"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      {!emailOtpStep ? (
+
+        <div className="space-y-5">
+
+          <div>
+
+            <label className="text-sm font-semibold text-[#0B2A4A]">
+              Current Email
+            </label>
+
+            <input
+              type="email"
+              value={emailForm.currentEmail}
+              readOnly
+              className="w-full mt-2 bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4"
+            />
+
+          </div>
+
+          <div>
+
+            <label className="text-sm font-semibold text-[#0B2A4A]">
+              New Email
+            </label>
+
+            <input
+              type="email"
+              value={emailForm.newEmail}
+              onChange={(e) =>
+                setEmailForm({
+                  ...emailForm,
+                  newEmail: e.target.value,
+                })
+              }
+              className="w-full mt-2 bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4
+              outline-none focus:border-[#27D3C3]"
+            />
+
+          </div>
+
+          <button
+            onClick={() =>
+              setEmailOtpStep(true)
+            }
+            className="w-full bg-[#0B2A4A]
+            text-white py-4 rounded-2xl
+            font-semibold"
+          >
+            Send OTP
+          </button>
+
+        </div>
+
+      ) : (
+
+        <div className="space-y-5">
+
+          <div
+            className="bg-[#EAFBF8]
+            rounded-2xl p-4"
+          >
+
+            <p className="text-sm text-[#0B2A4A]">
+              OTP sent to
+            </p>
+
+            <h3 className="font-bold text-[#0B2A4A] mt-1">
+              {emailForm.newEmail}
+            </h3>
+
+          </div>
+
+          <div>
+
+            <label className="text-sm font-semibold text-[#0B2A4A]">
+              Enter OTP
+            </label>
+
+            <input
+              type="text"
+              value={emailForm.otp}
+              onChange={(e) =>
+                setEmailForm({
+                  ...emailForm,
+                  otp: e.target.value,
+                })
+              }
+              className="w-full mt-2 bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4
+              outline-none focus:border-[#27D3C3]"
+            />
+
+          </div>
+
+          <button
+            onClick={() => {
+
+              setProfileData({
+                ...profileData,
+                email: emailForm.newEmail,
+              });
+
+              setShowEmailModal(false);
+
+              setEmailOtpStep(false);
+
+            }}
+            className="w-full bg-[#27D3C3]
+            text-[#0B2A4A]
+            py-4 rounded-2xl
+            font-bold"
+          >
+            Verify OTP
+          </button>
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+
+)}
+{activeMenu === "Settings" && (
+
+  <div className="max-w-4xl mx-auto space-y-6">
+
+    {/* HEADER */}
+
+    <div className="bg-white rounded-3xl p-6 shadow-sm">
+
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Profile Settings
+      </h2>
+
+      <p className="text-sm text-gray-500 mt-1">
+        Manage your profile information and security
+      </p>
+
+    </div>
+
+    {/* PROFILE CARD */}
+
+    <div className="bg-white rounded-3xl p-8 shadow-sm">
+
+      {/* PROFILE TOP */}
+
+      <div className="flex items-center gap-5 mb-8">
+
+        <div
+          className="w-20 h-20 rounded-full
+          bg-[#EAFBF8]
+          flex items-center justify-center
+          text-3xl"
+        >
+          👤
+        </div>
+
+        <div>
+
+          <h3 className="text-2xl font-bold text-[#0B2A4A]">
+            {profileData.name}
+          </h3>
+
+          <p className="text-sm text-gray-500 mt-1">
+            {profileData.email}
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* FORM */}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* NAME */}
+
+        <div>
+
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Full Name
+          </label>
+
+          <input
+            type="text"
+            value={profileData.name}
+            onChange={(e) =>
+              setProfileData({
+                ...profileData,
+                name: e.target.value,
+              })
+            }
+            className="w-full bg-[#F8FAFC]
+            border border-gray-200
+            rounded-2xl px-5 py-4
+            outline-none
+            focus:border-[#27D3C3]"
+          />
+
+        </div>
+
+        {/* PHONE */}
+
+        {/* PHONE */}
+
+<div>
+
+  <div className="flex items-center justify-between mb-2">
+
+    <label className="text-sm font-semibold text-[#0B2A4A]">
+      Phone Number
+    </label>
+
+    <button
+      onClick={() =>
+        setShowPhoneModal(true)
+      }
+      className="w-8 h-8 rounded-full
+      bg-[#EAFBF8]
+      hover:bg-[#dff8f4]
+      flex items-center justify-center
+      text-sm"
+    >
+      ✏️
+    </button>
+
+  </div>
+
+  <input
+    type="text"
+    value={profileData.phone}
+    readOnly
+    className="w-full bg-[#F8FAFC]
+    border border-gray-200
+    rounded-2xl px-5 py-4
+    outline-none"
+  />
+
+</div>
+
+{/* EMAIL */}
+
+<div>
+
+  <div className="flex items-center justify-between mb-2">
+
+    <label className="text-sm font-semibold text-[#0B2A4A]">
+      Email Address
+    </label>
+
+    <button
+      onClick={() =>
+        setShowEmailModal(true)
+      }
+      className="w-8 h-8 rounded-full
+      bg-[#EAFBF8]
+      hover:bg-[#dff8f4]
+      flex items-center justify-center
+      text-sm"
+    >
+      ✏️
+    </button>
+
+  </div>
+
+  <input
+    type="email"
+    value={profileData.email}
+    readOnly
+    className="w-full bg-[#F8FAFC]
+    border border-gray-200
+    rounded-2xl px-5 py-4
+    outline-none"
+  />
+
+</div>
+
+      </div>
+
+      {/* ACTIONS */}
+
+      <div className="flex flex-wrap gap-4 mt-8">
+
+        <button
+          className="bg-[#0B2A4A]
+          hover:bg-[#081f36]
+          text-white px-6 py-3
+          rounded-2xl font-semibold transition"
+        >
+          Save Changes
+        </button>
+
+        <button
+          onClick={() =>
+            setShowPasswordForm(
+              !showPasswordForm
+            )
+          }
+          className="bg-[#EAFBF8]
+          text-[#0B2A4A]
+          hover:bg-[#dff8f4]
+          px-6 py-3 rounded-2xl
+          font-semibold transition"
+        >
+          Update Password
+        </button>
+
+      </div>
+
+      {/* PASSWORD UPDATE */}
+
+      {showPasswordForm && (
+
+        <div
+          className="mt-8 border-t
+          pt-8"
+        >
+
+          <h3 className="text-lg font-bold text-[#0B2A4A] mb-5">
+            Change Password
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+            <input
+              type="password"
+              placeholder="Current Password"
+              className="bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4
+              outline-none
+              focus:border-[#27D3C3]"
+            />
+
+            <input
+              type="password"
+              placeholder="New Password"
+              className="bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4
+              outline-none
+              focus:border-[#27D3C3]"
+            />
+
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              className="bg-[#F8FAFC]
+              border border-gray-200
+              rounded-2xl px-5 py-4
+              outline-none
+              focus:border-[#27D3C3]"
+            />
+
+          </div>
+
+          <button
+            className="mt-5 bg-[#27D3C3]
+            hover:bg-[#1fb5a7]
+            text-[#0B2A4A]
+            px-6 py-3 rounded-2xl
+            font-bold transition"
+          >
+            Save Password
+          </button>
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+
+)}
 
         </div>
       </div>
