@@ -398,6 +398,7 @@ const [residentialType, setResidentialType] =
                 <div className="flex items-center gap-3 mt-6 overflow-x-auto">
 
                   {[
+                    "Personal information",
                     "KYC",
                     "Residential",
                     "Income",
@@ -428,74 +429,255 @@ const [residentialType, setResidentialType] =
 
               <div className="bg-white rounded-3xl p-6 shadow-sm">
 
-                {/* STEP 1 */}
 
-                {currentStep === 1 && (
+                {/* STEP 1 — PERSONAL INFORMATION */}
+
+{/* STEP 1 — PERSONAL INFORMATION */}
+
+{currentStep === 1 && (
 
   <div>
 
-    <h2 className="text-xl font-bold text-[#0B2A4A]">
-      KYC Documents
-    </h2>
+    {/* HEADER */}
 
-    <p className="text-sm text-gray-500 mt-2 mb-6">
-      Upload identity verification documents
-    </p>
+    <div className="mb-8">
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Personal Information
+      </h2>
 
-      {[
-        "PAN Card",
-        "Aadhar Card",
-        "Photograph",
-      ].map((doc, index) => (
+      <p className="text-sm text-gray-500 mt-2">
+        Enter customer personal and residential details
+      </p>
 
-        <div
-          key={index}
-          className="border border-gray-200 rounded-2xl p-5 bg-[#F8FAFC]"
-        >
+    </div>
 
-          <div className="flex items-center justify-between">
+    {/* FORM GRID */}
 
-            <h3 className="font-semibold text-[#0B2A4A]">
-              {doc}
-            </h3>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <span className="text-red-500 text-xs font-bold">
-              REQUIRED
-            </span>
+      {/* FULL NAME */}
 
-          </div>
+      <div>
 
-          <p className="text-xs text-gray-500 mt-2">
-            Accepted: JPG, PNG, PDF, DOC
-          </p>
+        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+          Full Name
+        </label>
 
-          <p className="text-xs text-gray-400 mt-1">
-            Max Size: 5MB
-          </p>
+        <input
+          type="text"
+          placeholder="Enter Full Name"
+          value={userData?.name || ""}
+          onChange={(e) =>
+            setUserData({
+              ...userData,
+              name: e.target.value,
+            })
+          }
+          className="w-full h-14 rounded-2xl
+          border border-gray-200
+          bg-[#F8FAFC]
+          px-5 text-sm text-[#0B2A4A]
+          outline-none transition-all duration-200
+          hover:border-[#27D3C3]/40
+          focus:border-[#27D3C3]
+          focus:ring-4 focus:ring-[#27D3C3]/10"
+        />
 
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-            className="mt-4 text-sm w-full
-            file:mr-4 file:px-4 file:py-2
-            file:rounded-xl file:border-0
-            file:bg-[#0B2A4A]
-            file:text-white
-            file:text-xs file:font-semibold"
-          />
+      </div>
 
-        </div>
+      {/* MOBILE */}
 
-      ))}
+      <div>
+
+        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+          Mobile Number
+        </label>
+
+        <input
+          type="text"
+          placeholder="Enter Mobile Number"
+          value={userData?.mobile || ""}
+          onChange={(e) =>
+            setUserData({
+              ...userData,
+              mobile: e.target.value,
+            })
+          }
+          className="w-full h-14 rounded-2xl
+          border border-gray-200
+          bg-[#F8FAFC]
+          px-5 text-sm text-[#0B2A4A]
+          outline-none transition-all duration-200
+          hover:border-[#27D3C3]/40
+          focus:border-[#27D3C3]
+          focus:ring-4 focus:ring-[#27D3C3]/10"
+        />
+
+      </div>
+
+      {/* EMAIL */}
+
+      <div>
+
+        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+          Email Address
+        </label>
+
+        <input
+          type="email"
+          placeholder="Enter Email Address"
+          value={userData?.email || ""}
+          onChange={(e) =>
+            setUserData({
+              ...userData,
+              email: e.target.value,
+            })
+          }
+          className="w-full h-14 rounded-2xl
+          border border-gray-200
+          bg-[#F8FAFC]
+          px-5 text-sm text-[#0B2A4A]
+          outline-none transition-all duration-200
+          hover:border-[#27D3C3]/40
+          focus:border-[#27D3C3]
+          focus:ring-4 focus:ring-[#27D3C3]/10"
+        />
+
+      </div>
+
+      {/* CITY */}
+
+      <div>
+
+        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+          City
+        </label>
+
+        <input
+          type="text"
+          placeholder="Enter City"
+          value={userData?.city || ""}
+          onChange={(e) =>
+            setUserData({
+              ...userData,
+              city: e.target.value,
+            })
+          }
+          className="w-full h-14 rounded-2xl
+          border border-gray-200
+          bg-[#F8FAFC]
+          px-5 text-sm text-[#0B2A4A]
+          outline-none transition-all duration-200
+          hover:border-[#27D3C3]/40
+          focus:border-[#27D3C3]
+          focus:ring-4 focus:ring-[#27D3C3]/10"
+        />
+
+      </div>
+
+      {/* STATE */}
+
+      <div>
+
+        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+          State
+        </label>
+
+        <input
+          type="text"
+          placeholder="Enter State"
+          value={userData?.state || ""}
+          onChange={(e) =>
+            setUserData({
+              ...userData,
+              state: e.target.value,
+            })
+          }
+          className="w-full h-14 rounded-2xl
+          border border-gray-200
+          bg-[#F8FAFC]
+          px-5 text-sm text-[#0B2A4A]
+          outline-none transition-all duration-200
+          hover:border-[#27D3C3]/40
+          focus:border-[#27D3C3]
+          focus:ring-4 focus:ring-[#27D3C3]/10"
+        />
+
+      </div>
+
+      {/* PINCODE */}
+
+      <div>
+
+        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+          Pincode
+        </label>
+
+        <input
+          type="text"
+          maxLength={6}
+          placeholder="Enter 6 Digit Pincode"
+          value={userData?.pincode || ""}
+          onChange={(e) => {
+
+            const value =
+              e.target.value.replace(/\D/g, "");
+
+            setUserData({
+              ...userData,
+              pincode: value,
+            });
+
+          }}
+          className="w-full h-14 rounded-2xl
+          border border-gray-200
+          bg-[#F8FAFC]
+          px-5 text-sm text-[#0B2A4A]
+          outline-none transition-all duration-200
+          hover:border-[#27D3C3]/40
+          focus:border-[#27D3C3]
+          focus:ring-4 focus:ring-[#27D3C3]/10"
+        />
+
+      </div>
+
+    </div>
+
+    {/* ADDRESS */}
+
+    <div className="mt-6">
+
+      <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+        Residential Address
+      </label>
+
+      <textarea
+        rows={5}
+        placeholder="Enter Complete Residential Address"
+        value={userData?.address || ""}
+        onChange={(e) =>
+          setUserData({
+            ...userData,
+            address: e.target.value,
+          })
+        }
+        className="w-full rounded-2xl
+        border border-gray-200
+        bg-[#F8FAFC]
+        px-5 py-4 text-sm text-[#0B2A4A]
+        outline-none resize-none
+        transition-all duration-200
+        hover:border-[#27D3C3]/40
+        focus:border-[#27D3C3]
+        focus:ring-4 focus:ring-[#27D3C3]/10"
+      />
 
     </div>
 
   </div>
 
 )}
-
                 {/* STEP 2 */}
 
                 {currentStep === 2 && (
