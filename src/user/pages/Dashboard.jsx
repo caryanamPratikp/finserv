@@ -427,136 +427,235 @@ const [residentialType, setResidentialType] =
 
               {/* FORM */}
 
-              <div className="bg-white rounded-3xl p-6 shadow-sm">
+              {/* BUTTONS */}
 
+<div className="bg-white rounded-3xl p-6 shadow-sm">
 
-                {/* STEP 1 — PERSONAL INFORMATION */}
+  {/* STEP 1 — PERSONAL INFORMATION */}
 
-{/* STEP 1 — PERSONAL INFORMATION */}
+  {currentStep === 1 && (
 
-{currentStep === 1 && (
-
-  <div>
-
-    {/* HEADER */}
-
-    <div className="mb-8">
+    <div>
 
       <h2 className="text-2xl font-bold text-[#0B2A4A]">
         Personal Information
       </h2>
 
-      <p className="text-sm text-gray-500 mt-2">
-        Enter customer personal and residential details
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Enter customer personal details
       </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Full Name
+          </label>
+
+          <input
+            type="text"
+            placeholder="Enter Full Name"
+            value={userData?.name || ""}
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                name: e.target.value,
+              })
+            }
+            className="w-full h-14 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Mobile Number
+          </label>
+
+          <input
+            type="text"
+            placeholder="Enter Mobile Number"
+            value={userData?.mobile || ""}
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                mobile: e.target.value,
+              })
+            }
+            className="w-full h-14 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Email Address
+          </label>
+
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={userData?.email || ""}
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                email: e.target.value,
+              })
+            }
+            className="w-full h-14 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5"
+          />
+        </div>
+
+        <div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Date Of Birth
+          </label>
+
+          <input
+            type="date"
+            value={userData?.dob || ""}
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                dob: e.target.value,
+              })
+            }
+            className="w-full h-14 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5"
+          />
+        </div>
+
+      </div>
 
     </div>
 
-    {/* FORM GRID */}
+  )}
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {/* STEP 2 — KYC */}
 
-      {/* FULL NAME */}
+  {currentStep === 2 && (
 
-      <div>
+    <div>
 
-        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-          Full Name
-        </label>
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        KYC Documents
+      </h2>
 
-        <input
-          type="text"
-          placeholder="Enter Full Name"
-          value={userData?.name || ""}
-          onChange={(e) =>
-            setUserData({
-              ...userData,
-              name: e.target.value,
-            })
-          }
-          className="w-full h-14 rounded-2xl
-          border border-gray-200
-          bg-[#F8FAFC]
-          px-5 text-sm text-[#0B2A4A]
-          outline-none transition-all duration-200
-          hover:border-[#27D3C3]/40
-          focus:border-[#27D3C3]
-          focus:ring-4 focus:ring-[#27D3C3]/10"
-        />
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Upload PAN Card and Aadhaar Card
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* PAN */}
+
+        <div className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]">
+
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-3">
+            PAN Number
+          </label>
+
+          <input
+            type="text"
+            placeholder="ABCDE1234F"
+            value={userData?.pan || ""}
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                pan: e.target.value.toUpperCase(),
+              })
+            }
+            className="w-full h-14 rounded-2xl border border-gray-200 px-5"
+          />
+
+          <label className="text-sm font-semibold text-[#0B2A4A] block mt-5 mb-2">
+            Upload PAN Card
+          </label>
+
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                panFile: e.target.files[0],
+              })
+            }
+            className="w-full text-sm
+            file:mr-4 file:px-4 file:py-2
+            file:rounded-xl file:border-0
+            file:bg-[#0B2A4A]
+            file:text-white"
+          />
+
+        </div>
+
+        {/* AADHAAR */}
+
+        <div className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]">
+
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-3">
+            Aadhaar Number
+          </label>
+
+          <input
+            type="text"
+            maxLength={12}
+            placeholder="Enter Aadhaar Number"
+            value={userData?.aadhaar || ""}
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                aadhaar: e.target.value.replace(/\D/g, ""),
+              })
+            }
+            className="w-full h-14 rounded-2xl border border-gray-200 px-5"
+          />
+
+          <label className="text-sm font-semibold text-[#0B2A4A] block mt-5 mb-2">
+            Upload Aadhaar Card
+          </label>
+
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                aadhaarFile: e.target.files[0],
+              })
+            }
+            className="w-full text-sm
+            file:mr-4 file:px-4 file:py-2
+            file:rounded-xl file:border-0
+            file:bg-[#0B2A4A]
+            file:text-white"
+          />
+
+        </div>
 
       </div>
 
-      {/* MOBILE */}
+    </div>
 
-      <div>
+  )}
 
-        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-          Mobile Number
-        </label>
+  {/* STEP 3 — RESIDENTIAL */}
 
-        <input
-          type="text"
-          placeholder="Enter Mobile Number"
-          value={userData?.mobile || ""}
-          onChange={(e) =>
-            setUserData({
-              ...userData,
-              mobile: e.target.value,
-            })
-          }
-          className="w-full h-14 rounded-2xl
-          border border-gray-200
-          bg-[#F8FAFC]
-          px-5 text-sm text-[#0B2A4A]
-          outline-none transition-all duration-200
-          hover:border-[#27D3C3]/40
-          focus:border-[#27D3C3]
-          focus:ring-4 focus:ring-[#27D3C3]/10"
-        />
+  {currentStep === 3 && (
 
-      </div>
+    <div>
 
-      {/* EMAIL */}
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Residential Details
+      </h2>
 
-      <div>
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Address information and residential proof
+      </p>
 
-        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-          Email Address
-        </label>
-
-        <input
-          type="email"
-          placeholder="Enter Email Address"
-          value={userData?.email || ""}
-          onChange={(e) =>
-            setUserData({
-              ...userData,
-              email: e.target.value,
-            })
-          }
-          className="w-full h-14 rounded-2xl
-          border border-gray-200
-          bg-[#F8FAFC]
-          px-5 text-sm text-[#0B2A4A]
-          outline-none transition-all duration-200
-          hover:border-[#27D3C3]/40
-          focus:border-[#27D3C3]
-          focus:ring-4 focus:ring-[#27D3C3]/10"
-        />
-
-      </div>
-
-      {/* CITY */}
-
-      <div>
-
-        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-          City
-        </label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         <input
           type="text"
-          placeholder="Enter City"
+          placeholder="City"
           value={userData?.city || ""}
           onChange={(e) =>
             setUserData({
@@ -564,29 +663,12 @@ const [residentialType, setResidentialType] =
               city: e.target.value,
             })
           }
-          className="w-full h-14 rounded-2xl
-          border border-gray-200
-          bg-[#F8FAFC]
-          px-5 text-sm text-[#0B2A4A]
-          outline-none transition-all duration-200
-          hover:border-[#27D3C3]/40
-          focus:border-[#27D3C3]
-          focus:ring-4 focus:ring-[#27D3C3]/10"
+          className="w-full h-14 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5"
         />
-
-      </div>
-
-      {/* STATE */}
-
-      <div>
-
-        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-          State
-        </label>
 
         <input
           type="text"
-          placeholder="Enter State"
+          placeholder="State"
           value={userData?.state || ""}
           onChange={(e) =>
             setUserData({
@@ -594,67 +676,14 @@ const [residentialType, setResidentialType] =
               state: e.target.value,
             })
           }
-          className="w-full h-14 rounded-2xl
-          border border-gray-200
-          bg-[#F8FAFC]
-          px-5 text-sm text-[#0B2A4A]
-          outline-none transition-all duration-200
-          hover:border-[#27D3C3]/40
-          focus:border-[#27D3C3]
-          focus:ring-4 focus:ring-[#27D3C3]/10"
+          className="w-full h-14 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5"
         />
 
       </div>
-
-      {/* PINCODE */}
-
-      <div>
-
-        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-          Pincode
-        </label>
-
-        <input
-          type="text"
-          maxLength={6}
-          placeholder="Enter 6 Digit Pincode"
-          value={userData?.pincode || ""}
-          onChange={(e) => {
-
-            const value =
-              e.target.value.replace(/\D/g, "");
-
-            setUserData({
-              ...userData,
-              pincode: value,
-            });
-
-          }}
-          className="w-full h-14 rounded-2xl
-          border border-gray-200
-          bg-[#F8FAFC]
-          px-5 text-sm text-[#0B2A4A]
-          outline-none transition-all duration-200
-          hover:border-[#27D3C3]/40
-          focus:border-[#27D3C3]
-          focus:ring-4 focus:ring-[#27D3C3]/10"
-        />
-
-      </div>
-
-    </div>
-
-    {/* ADDRESS */}
-
-    <div className="mt-6">
-
-      <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-        Residential Address
-      </label>
 
       <textarea
         rows={5}
-        placeholder="Enter Complete Residential Address"
+        placeholder="Complete Address"
         value={userData?.address || ""}
         onChange={(e) =>
           setUserData({
@@ -662,338 +691,229 @@ const [residentialType, setResidentialType] =
             address: e.target.value,
           })
         }
-        className="w-full rounded-2xl
-        border border-gray-200
-        bg-[#F8FAFC]
-        px-5 py-4 text-sm text-[#0B2A4A]
-        outline-none resize-none
-        transition-all duration-200
-        hover:border-[#27D3C3]/40
-        focus:border-[#27D3C3]
-        focus:ring-4 focus:ring-[#27D3C3]/10"
+        className="w-full rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5 py-4 mt-6"
       />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+
+        {/* LIGHT BILL */}
+
+        <div className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]">
+
+          <h3 className="font-semibold text-[#0B2A4A]">
+            Light Bill
+          </h3>
+
+          <p className="text-xs text-gray-500 mt-1">
+            Upload latest electricity bill
+          </p>
+
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                lightBill: e.target.files[0],
+              })
+            }
+            className="mt-4 w-full text-sm
+            file:mr-4 file:px-4 file:py-2
+            file:rounded-xl file:border-0
+            file:bg-[#0B2A4A]
+            file:text-white"
+          />
+
+        </div>
+
+        {/* RENT AGREEMENT */}
+
+        <div className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]">
+
+          <h3 className="font-semibold text-[#0B2A4A]">
+            Rent Agreement
+          </h3>
+
+          <p className="text-xs text-gray-500 mt-1">
+            Upload rental agreement copy
+          </p>
+
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) =>
+              setUserData({
+                ...userData,
+                rentAgreement: e.target.files[0],
+              })
+            }
+            className="mt-4 w-full text-sm
+            file:mr-4 file:px-4 file:py-2
+            file:rounded-xl file:border-0
+            file:bg-[#0B2A4A]
+            file:text-white"
+          />
+
+        </div>
+
+      </div>
 
     </div>
 
-  </div>
+  )}
 
-)}
-                {/* STEP 2 */}
+  {/* STEP 4 — INCOME */}
 
-                {currentStep === 2 && (
+  {currentStep === 4 && (
 
-  <div>
+    <div>
 
-    <h2 className="text-xl font-bold text-[#0B2A4A]">
-      Residential Proof
-    </h2>
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Income Proof
+      </h2>
 
-    <p className="text-sm text-gray-500 mt-2 mb-6">
-      Upload any one address verification document
-    </p>
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Upload employment and income documents
+      </p>
 
-    {/* SELECT PROOF TYPE */}
+      <select
+        value={userData?.employmentType || ""}
+        onChange={(e) =>
+          setUserData({
+            ...userData,
+            employmentType: e.target.value,
+          })
+        }
+        className="w-full h-14 rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5 mb-8"
+      >
+        <option value="">Select Employment Type</option>
+        <option value="Salaried">Salaried</option>
+        <option value="Self Employed">Self Employed</option>
+      </select>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+      {/* SALARIED */}
 
-      {[
-        "Light Bill",
-        "Rental Agreement",
-      ].map((doc, index) => (
+      {userData?.employmentType === "Salaried" && (
 
-        <button
-          key={index}
-          type="button"
-          onClick={() =>
-            setResidentialType(doc)
-          }
-          className={`rounded-3xl border p-6 text-left transition-all duration-200
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          ${
-            residentialType === doc
-              ? "border-[#27D3C3] bg-[#EAFBF8] shadow-sm"
-              : "border-gray-200 bg-white hover:border-[#27D3C3]/40"
-          }`}
-        >
+          {[
+            "Appointment Letter",
+            "3 Months Salary Slips",
+            "6 Months Bank Statement",
+          ].map((doc, index) => (
 
-          <div className="flex items-center justify-between">
+            <div
+              key={index}
+              className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]"
+            >
 
-            <div>
-
-              <h3 className="font-bold text-[#0B2A4A]">
+              <h3 className="font-semibold text-[#0B2A4A]">
                 {doc}
               </h3>
 
-              <p className="text-xs text-gray-500 mt-2">
-                Use this document for address verification
-              </p>
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                className="mt-4 w-full text-sm
+                file:mr-4 file:px-4 file:py-2
+                file:rounded-xl file:border-0
+                file:bg-[#0B2A4A]
+                file:text-white"
+              />
 
             </div>
 
-            {residentialType === doc && (
-
-              <div className="w-7 h-7 rounded-full bg-[#27D3C3]
-              flex items-center justify-center text-xs font-bold text-[#0B2A4A]">
-
-                ✓
-
-              </div>
-
-            )}
-
-          </div>
-
-        </button>
-
-      ))}
-
-    </div>
-
-    {/* FILE UPLOAD */}
-
-    {residentialType && (
-
-      <div className="border border-gray-200 rounded-3xl p-6 bg-[#F8FAFC]">
-
-        <div className="flex items-center justify-between">
-
-          <div>
-
-            <h3 className="font-bold text-[#0B2A4A]">
-              Upload {residentialType}
-            </h3>
-
-            <p className="text-xs text-gray-500 mt-2">
-              Accepted: JPG, PNG, PDF, DOC
-            </p>
-
-          </div>
-
-          <span className="text-red-500 text-xs font-bold">
-            REQUIRED
-          </span>
+          ))}
 
         </div>
 
-        <p className="text-xs text-gray-400 mt-1">
-          Max Size: 5MB
-        </p>
+      )}
 
-        <input
-          type="file"
-          accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-          className="mt-5 text-sm w-full
-          file:mr-4 file:px-4 file:py-2
-          file:rounded-xl file:border-0
-          file:bg-[#0B2A4A]
-          file:text-white
-          file:text-xs file:font-semibold
-          hover:file:bg-[#081f36]"
-        />
+      {/* SELF EMPLOYED */}
 
-      </div>
+      {userData?.employmentType === "Self Employed" && (
 
-    )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-  </div>
+          {[
+            "ITR Copy",
+            "6 Months Bank Statement",
+          ].map((doc, index) => (
 
-)}
+            <div
+              key={index}
+              className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]"
+            >
 
-                {/* STEP 3 */}
+              <h3 className="font-semibold text-[#0B2A4A]">
+                {doc}
+              </h3>
 
-                {currentStep === 3 && (
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                className="mt-4 w-full text-sm
+                file:mr-4 file:px-4 file:py-2
+                file:rounded-xl file:border-0
+                file:bg-[#0B2A4A]
+                file:text-white"
+              />
 
-  <div>
+            </div>
 
-    <h2 className="text-xl font-bold text-[#0B2A4A]">
-      Income Proof
-    </h2>
-
-    <p className="text-sm text-gray-500 mt-2 mb-6">
-      Select employment type and upload required documents
-    </p>
-
-    {/* EMPLOYMENT TYPE */}
-
-   <div className="mb-6">
-
-  <label className="text-sm font-semibold text-[#0B2A4A] block mb-3">
-    Employment Type
-  </label>
-
-  <div className="relative">
-
-    <select
-      value={employmentType}
-      onChange={(e) =>
-        setEmploymentType(e.target.value)
-      }
-      className="w-full appearance-none
-      bg-[#F8FAFC]
-      border border-gray-200
-      hover:border-[#27D3C3]/40
-      focus:border-[#27D3C3]
-      focus:ring-4 focus:ring-[#27D3C3]/10
-      rounded-2xl
-      px-5 py-4 pr-14
-      text-sm font-medium text-[#0B2A4A]
-      outline-none transition-all duration-200"
-    >
-
-      <option value="">
-        Select Employment Type
-      </option>
-
-      <option value="Salaried">
-        Salaried
-      </option>
-
-      <option value="Self Employed">
-        Self Employed
-      </option>
-
-    </select>
-
-    {/* CUSTOM DROPDOWN ICON */}
-
-    <div
-      className="absolute right-5 top-1/2
-      -translate-y-1/2
-      pointer-events-none
-      text-[#0B2A4A]"
-    >
-
-      ▼
-
-    </div>
-
-  </div>
-
-  <p className="text-xs text-gray-400 mt-2">
-    Select your current employment category
-  </p>
-
-</div>
-
-    {/* DOCUMENTS */}
-
-    {(employmentType === "Salaried" ||
-  employmentType === "Government Employee") && (
-
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
-
-    {[
-      {
-        title: "Salary Slips",
-        subtitle: "Last 3 Months",
-      },
-
-      {
-        title: "Bank Statement",
-        subtitle: "Last 6 Months",
-      },
-
-      {
-        title: "Appointment Letter",
-        subtitle: "Company Appointment Copy",
-      },
-
-    ].map((doc, index) => (
-
-      <div
-        key={index}
-        className="border border-gray-200 rounded-2xl p-5 bg-[#F8FAFC]"
-      >
-
-        {/* TOP */}
-
-        <div className="flex items-center justify-between">
-
-          <div>
-
-            <h3 className="font-semibold text-[#0B2A4A]">
-              {doc.title}
-            </h3>
-
-            <p className="text-xs text-[#27D3C3] mt-1 font-medium">
-              {doc.subtitle}
-            </p>
-
-          </div>
-
-          <span className="text-red-500 text-xs font-bold">
-            REQUIRED
-          </span>
+          ))}
 
         </div>
 
-        {/* FILE INFO */}
+      )}
 
-        <p className="text-xs text-gray-500 mt-4">
-          Accepted: JPG, PNG, PDF, DOC
-        </p>
+    </div>
 
-        <p className="text-xs text-gray-400 mt-1">
-          Max Size: 5MB
-        </p>
+  )}
 
-        {/* FILE INPUT */}
+  {/* STEP 5 — VEHICLE */}
 
-        <input
-          type="file"
-          accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-          className="mt-4 text-sm w-full
-          file:mr-4 file:px-4 file:py-2
-          file:rounded-xl file:border-0
-          file:bg-[#0B2A4A]
-          file:text-white
-          file:text-xs file:font-semibold
-          hover:file:bg-[#081f36]"
-        />
+  {currentStep === 5 && (
 
-      </div>
+    <div>
 
-    ))}
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Vehicle Documents
+      </h2>
 
-  </div>
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Upload vehicle related documents
+      </p>
 
-)}
-
-    {employmentType === "Self Employed" && (
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {[
-          "ITR Return",
-          "Bank Statement",
+          "RC Copy",
+          "Insurance Copy",
+          "Front Car Image",
+          "Rear Car Image",
+          "Chassis Number Image",
+          "Odometer Image (KM Visible)",
         ].map((doc, index) => (
 
           <div
             key={index}
-            className="border border-gray-200 rounded-2xl p-5 bg-[#F8FAFC]"
+            className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]"
           >
 
             <h3 className="font-semibold text-[#0B2A4A]">
               {doc}
             </h3>
 
-            <p className="text-xs text-gray-500 mt-2">
-              Accepted: JPG, PNG, PDF, DOC
-            </p>
-
-            <p className="text-xs text-gray-400 mt-1">
-              Max Size: 5MB
-            </p>
-
             <input
               type="file"
-              accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-              className="mt-4 text-sm w-full
+              accept=".jpg,.jpeg,.png,.pdf"
+              className="mt-4 w-full text-sm
               file:mr-4 file:px-4 file:py-2
               file:rounded-xl file:border-0
               file:bg-[#0B2A4A]
-              file:text-white
-              file:text-xs file:font-semibold"
+              file:text-white"
             />
 
           </div>
@@ -1002,258 +922,137 @@ const [residentialType, setResidentialType] =
 
       </div>
 
+    </div>
+
+  )}
+
+  {/* STEP 6 — VERIFY */}
+
+  {currentStep === 6 && (
+
+    <div>
+
+      <div className="text-center mb-8">
+
+        <div className="w-24 h-24 mx-auto rounded-full bg-[#EAFBF8]
+        flex items-center justify-center text-5xl">
+          ✅
+        </div>
+
+        <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">
+          Verify Details
+        </h2>
+
+        <p className="text-gray-500 mt-3">
+          Please verify all information before final submit
+        </p>
+
+      </div>
+
+      <div className="bg-[#F8FAFC] rounded-3xl p-6 space-y-4">
+
+        <div>
+          <span className="font-semibold text-[#0B2A4A]">
+            Name:
+          </span>{" "}
+          {userData?.name}
+        </div>
+
+        <div>
+          <span className="font-semibold text-[#0B2A4A]">
+            Mobile:
+          </span>{" "}
+          {userData?.mobile}
+        </div>
+
+        <div>
+          <span className="font-semibold text-[#0B2A4A]">
+            PAN:
+          </span>{" "}
+          {userData?.pan}
+        </div>
+
+        <div>
+          <span className="font-semibold text-[#0B2A4A]">
+            Aadhaar:
+          </span>{" "}
+          {userData?.aadhaar}
+        </div>
+
+        <div>
+          <span className="font-semibold text-[#0B2A4A]">
+            Employment:
+          </span>{" "}
+          {userData?.employmentType}
+        </div>
+
+        <div>
+          <span className="font-semibold text-[#0B2A4A]">
+            Address:
+          </span>{" "}
+          {userData?.address}
+        </div>
+
+      </div>
+
+    </div>
+
+  )}
+
+  {/* BUTTONS */}
+
+  <div className="flex items-center justify-between mt-10">
+
+    <button
+      disabled={currentStep === 1}
+      onClick={() =>
+        setCurrentStep((prev) => prev - 1)
+      }
+      className={`px-6 py-3 rounded-2xl text-sm font-semibold
+      ${
+        currentStep === 1
+          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+          : "bg-[#F4F6F9] hover:bg-gray-200 text-[#0B2A4A]"
+      }`}
+    >
+      ← Previous
+    </button>
+
+    {currentStep !== 6 ? (
+
+      <button
+        onClick={() =>
+          setCurrentStep((prev) => prev + 1)
+        }
+        className="bg-[#0B2A4A] hover:bg-[#081f36]
+        text-white px-6 py-3 rounded-2xl
+        text-sm font-semibold"
+      >
+        Next →
+      </button>
+
+    ) : (
+
+      <button
+        onClick={() => {
+
+          alert("Submitted For Approval Successfully");
+
+          setCurrentStep(1);
+
+        }}
+        className="bg-[#27D3C3] hover:bg-[#1fb5a7]
+        text-[#0B2A4A] px-8 py-3 rounded-2xl
+        text-sm font-bold"
+      >
+        Final Submit
+      </button>
+
     )}
 
   </div>
 
-)}
-
-                {/* STEP 4 */}
-
-                {currentStep === 4 && (
-
-  <div>
-
-    <h2 className="text-xl font-bold text-[#0B2A4A] mb-1">
-      Vehicle Documents
-    </h2>
-
-    <p className="text-sm text-gray-500 mt-2 mb-6">
-      Upload all required vehicle verification documents and images
-    </p>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
-
-      {[
-        {
-          key: "rc",
-          title: "RC Copy",
-          subtitle: "Registration Certificate",
-        },
-
-        {
-          key: "insurance",
-          title: "Insurance Copy",
-          subtitle: "Valid Insurance Document",
-        },
-
-        {
-          key: "odometer",
-          title: "Odometer Reading",
-          subtitle: "KM Reading Must Be Visible",
-        },
-
-        {
-          key: "chasis",
-          title: "Chassis Number",
-          subtitle: "Clear Chassis Number Image",
-        },
-
-        {
-          key: "front",
-          title: "Car Front Side",
-          subtitle: "Front Side Vehicle Picture",
-        },
-
-        {
-          key: "back",
-          title: "Car Back Side",
-          subtitle: "Rear Side Vehicle Picture",
-        },
-
-      ].map((doc, index) => (
-
-        <div
-          key={index}
-          className="border border-red-200 rounded-2xl p-5 bg-[#FFF7F7]"
-        >
-
-          {/* HEADER */}
-
-          <div className="flex items-center justify-between">
-
-            <div>
-
-              <h3 className="font-semibold text-[#0B2A4A]">
-                {doc.title}
-              </h3>
-
-              <p className="text-xs text-[#27D3C3] mt-1 font-medium">
-                {doc.subtitle}
-              </p>
-
-            </div>
-
-            <span className="text-red-500 text-xs font-bold">
-              REQUIRED
-            </span>
-
-          </div>
-
-          {/* FILE INFO */}
-
-          <p className="text-xs text-gray-500 mt-4">
-            Accepted: JPG, PNG, PDF
-          </p>
-
-          <p className="text-xs text-gray-400 mt-1">
-            Max Size: 5MB
-          </p>
-
-          {/* INPUT */}
-
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) =>
-              setVehicleDocs({
-                ...vehicleDocs,
-                [doc.key]: e.target.files[0],
-              })
-            }
-            className="mt-4 text-sm w-full
-            file:mr-4 file:px-4 file:py-2
-            file:rounded-xl file:border-0
-            file:bg-[#0B2A4A]
-            file:text-white
-            file:text-xs file:font-semibold
-            hover:file:bg-[#081f36]"
-          />
-
-        </div>
-
-      ))}
-
-    </div>
-
-  </div>
-
-)}
-
-                {/* STEP 5 */}
-
-                {currentStep === 5 && (
-
-                  <div className="text-center">
-
-                    <div className="w-24 h-24 mx-auto rounded-full bg-[#EAFBF8]
-                    flex items-center justify-center text-5xl">
-
-                      ✅
-
-                    </div>
-
-                    <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">
-                      Verify Documents
-                    </h2>
-
-                    <p className="text-gray-500 mt-3">
-                      Please verify all uploaded documents before final submission.
-                    </p>
-
-                  </div>
-
-                )}
-
-                {/* BUTTONS */}
-
-                <div className="flex items-center justify-between mt-10">
-
-                  {/* PREVIOUS */}
-
-                  <button
-                    disabled={currentStep === 1}
-                    onClick={() =>
-                      setCurrentStep((prev) => prev - 1)
-                    }
-                    className={`px-6 py-3 rounded-2xl text-sm font-semibold
-
-                    ${
-                      currentStep === 1
-                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                        : "bg-[#F4F6F9] hover:bg-gray-200 text-[#0B2A4A]"
-                    }`}
-                  >
-                    ← Previous
-                  </button>
-
-                  {/* NEXT */}
-
-                  {currentStep !== 5 ? (
-
-                    <button
-                      onClick={() => {
-
-                        if (
-                          currentStep === 3 &&
-                          !employmentType
-                        ) {
-
-                          alert(
-                            "Please select employment type."
-                          );
-
-                          return;
-                        }
-
-                        if (currentStep === 4) {
-
-                          if (
-                            !vehicleDocs.rc ||
-                            !vehicleDocs.insurance
-                          ) {
-
-                            alert(
-                              "RC Picture and Insurance Copy are required."
-                            );
-
-                            return;
-                          }
-                        }
-
-                        setCurrentStep((prev) => prev + 1);
-                      }}
-                      className="bg-[#0B2A4A] hover:bg-[#081f36]
-                      text-white px-6 py-3 rounded-2xl
-                      text-sm font-semibold"
-                    >
-                      Next →
-                    </button>
-
-                  ) : (
-
-                    <button
-                      onClick={() => {
-
-                        setDocumentsSubmitted(true);
-
-                        setUserData({
-                          ...userData,
-                          status:
-                            "Documents Submitted",
-                          documentsUploaded: 8,
-                        });
-
-                        setCurrentStep(1);
-
-                        setActiveMenu("Status");
-
-                        alert(
-                          "Documents submitted successfully for verification."
-                        );
-                      }}
-                      className="bg-[#27D3C3] hover:bg-[#1fb5a7]
-                      text-[#0B2A4A] px-8 py-3 rounded-2xl
-                      text-sm font-bold"
-                    >
-                      Submit Documents
-                    </button>
-
-                  )}
-
-                </div>
-
-              </div>
+</div>
 
             </div>
 

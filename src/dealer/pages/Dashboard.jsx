@@ -646,7 +646,7 @@ const weekLabels = [
 
   </div>
 
-  {/* STEP 1 — PERSONAL INFORMATION */}
+  {/* STEP 1 — PERSONAL */}
 
   {dealerCurrentStep === 1 && (
 
@@ -659,14 +659,12 @@ const weekLabels = [
         </h2>
 
         <p className="text-sm text-gray-500 mt-2">
-          Enter customer personal and residential details
+          Enter customer personal details
         </p>
 
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* FULL NAME */}
 
         <div>
 
@@ -684,18 +682,11 @@ const weekLabels = [
                 name: e.target.value,
               })
             }
-            className="w-full h-14 rounded-2xl
-            border border-gray-200 bg-[#F8FAFC]
-            px-5 text-sm text-[#0B2A4A]
-            outline-none transition-all duration-200
-            hover:border-[#27D3C3]/40
-            focus:border-[#27D3C3]
-            focus:ring-4 focus:ring-[#27D3C3]/10"
+            className="w-full h-14 rounded-2xl border border-gray-200
+            bg-[#F8FAFC] px-5 outline-none"
           />
 
         </div>
-
-        {/* MOBILE */}
 
         <div>
 
@@ -708,29 +699,17 @@ const weekLabels = [
             maxLength={10}
             placeholder="Enter Mobile Number"
             value={dealerUserData?.mobile || ""}
-            onChange={(e) => {
-
-              const value =
-                e.target.value.replace(/\D/g, "");
-
+            onChange={(e) =>
               setDealerUserData({
                 ...dealerUserData,
-                mobile: value,
-              });
-
-            }}
-            className="w-full h-14 rounded-2xl
-            border border-gray-200 bg-[#F8FAFC]
-            px-5 text-sm text-[#0B2A4A]
-            outline-none transition-all duration-200
-            hover:border-[#27D3C3]/40
-            focus:border-[#27D3C3]
-            focus:ring-4 focus:ring-[#27D3C3]/10"
+                mobile: e.target.value.replace(/\D/g, ""),
+              })
+            }
+            className="w-full h-14 rounded-2xl border border-gray-200
+            bg-[#F8FAFC] px-5 outline-none"
           />
 
         </div>
-
-        {/* EMAIL */}
 
         <div>
 
@@ -740,7 +719,7 @@ const weekLabels = [
 
           <input
             type="email"
-            placeholder="Enter Email Address"
+            placeholder="Enter Email"
             value={dealerUserData?.email || ""}
             onChange={(e) =>
               setDealerUserData({
@@ -748,139 +727,32 @@ const weekLabels = [
                 email: e.target.value,
               })
             }
-            className="w-full h-14 rounded-2xl
-            border border-gray-200 bg-[#F8FAFC]
-            px-5 text-sm text-[#0B2A4A]
-            outline-none transition-all duration-200
-            hover:border-[#27D3C3]/40
-            focus:border-[#27D3C3]
-            focus:ring-4 focus:ring-[#27D3C3]/10"
+            className="w-full h-14 rounded-2xl border border-gray-200
+            bg-[#F8FAFC] px-5 outline-none"
           />
 
         </div>
 
-        {/* CITY */}
-
         <div>
 
           <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-            City
+            Date Of Birth
           </label>
 
           <input
-            type="text"
-            placeholder="Enter City"
-            value={dealerUserData?.city || ""}
+            type="date"
+            value={dealerUserData?.dob || ""}
             onChange={(e) =>
               setDealerUserData({
                 ...dealerUserData,
-                city: e.target.value,
+                dob: e.target.value,
               })
             }
-            className="w-full h-14 rounded-2xl
-            border border-gray-200 bg-[#F8FAFC]
-            px-5 text-sm text-[#0B2A4A]
-            outline-none transition-all duration-200
-            hover:border-[#27D3C3]/40
-            focus:border-[#27D3C3]
-            focus:ring-4 focus:ring-[#27D3C3]/10"
+            className="w-full h-14 rounded-2xl border border-gray-200
+            bg-[#F8FAFC] px-5 outline-none"
           />
 
         </div>
-
-        {/* STATE */}
-
-        <div>
-
-          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-            State
-          </label>
-
-          <input
-            type="text"
-            placeholder="Enter State"
-            value={dealerUserData?.state || ""}
-            onChange={(e) =>
-              setDealerUserData({
-                ...dealerUserData,
-                state: e.target.value,
-              })
-            }
-            className="w-full h-14 rounded-2xl
-            border border-gray-200 bg-[#F8FAFC]
-            px-5 text-sm text-[#0B2A4A]
-            outline-none transition-all duration-200
-            hover:border-[#27D3C3]/40
-            focus:border-[#27D3C3]
-            focus:ring-4 focus:ring-[#27D3C3]/10"
-          />
-
-        </div>
-
-        {/* PINCODE */}
-
-        <div>
-
-          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-            Pincode
-          </label>
-
-          <input
-            type="text"
-            maxLength={6}
-            placeholder="Enter 6 Digit Pincode"
-            value={dealerUserData?.pincode || ""}
-            onChange={(e) => {
-
-              const value =
-                e.target.value.replace(/\D/g, "");
-
-              setDealerUserData({
-                ...dealerUserData,
-                pincode: value,
-              });
-
-            }}
-            className="w-full h-14 rounded-2xl
-            border border-gray-200 bg-[#F8FAFC]
-            px-5 text-sm text-[#0B2A4A]
-            outline-none transition-all duration-200
-            hover:border-[#27D3C3]/40
-            focus:border-[#27D3C3]
-            focus:ring-4 focus:ring-[#27D3C3]/10"
-          />
-
-        </div>
-
-      </div>
-
-      {/* ADDRESS */}
-
-      <div className="mt-6">
-
-        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-          Residential Address
-        </label>
-
-        <textarea
-          rows={5}
-          placeholder="Enter Complete Residential Address"
-          value={dealerUserData?.address || ""}
-          onChange={(e) =>
-            setDealerUserData({
-              ...dealerUserData,
-              address: e.target.value,
-            })
-          }
-          className="w-full rounded-2xl
-          border border-gray-200 bg-[#F8FAFC]
-          px-5 py-4 text-sm text-[#0B2A4A]
-          outline-none resize-none
-          transition-all duration-200
-          hover:border-[#27D3C3]/40
-          focus:border-[#27D3C3]
-          focus:ring-4 focus:ring-[#27D3C3]/10"
-        />
 
       </div>
 
@@ -892,41 +764,50 @@ const weekLabels = [
 
   {dealerCurrentStep === 2 && (
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
 
-      {[
-        "PAN Card",
-        "Aadhar Card",
-        "Photograph",
-      ].map((doc, index) => (
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        KYC Documents
+      </h2>
 
-        <div
-          key={index}
-          className="border border-gray-200
-          rounded-2xl p-5 bg-[#F8FAFC]
-          hover:border-[#27D3C3]/40
-          transition-all"
-        >
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Upload PAN & Aadhaar documents
+      </p>
 
-          <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <h3 className="font-semibold text-[#0B2A4A]">
-              {doc}
-            </h3>
+        {/* PAN */}
 
-            <span className="text-red-500 text-xs font-bold">
-              REQUIRED
-            </span>
+        <div className="bg-[#F8FAFC] border border-gray-200 rounded-3xl p-5">
 
-          </div>
+          <label className="font-semibold text-[#0B2A4A]">
+            PAN Number
+          </label>
 
-          <p className="text-xs text-gray-500 mt-3">
-            Accepted: JPG, PNG, PDF
-          </p>
+          <input
+            type="text"
+            placeholder="ABCDE1234F"
+            value={dealerUserData?.pan || ""}
+            onChange={(e) =>
+              setDealerUserData({
+                ...dealerUserData,
+                pan: e.target.value.toUpperCase(),
+              })
+            }
+            className="w-full h-12 rounded-xl border border-gray-200
+            px-4 mt-3 bg-white"
+          />
 
           <input
             type="file"
-            className="mt-5 text-sm w-full
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) =>
+              setDealerUserData({
+                ...dealerUserData,
+                panFile: e.target.files[0],
+              })
+            }
+            className="mt-4 w-full text-sm
             file:mr-4 file:px-4 file:py-2
             file:rounded-xl file:border-0
             file:bg-[#0B2A4A]
@@ -935,13 +816,370 @@ const weekLabels = [
 
         </div>
 
-      ))}
+        {/* AADHAAR */}
+
+        <div className="bg-[#F8FAFC] border border-gray-200 rounded-3xl p-5">
+
+          <label className="font-semibold text-[#0B2A4A]">
+            Aadhaar Number
+          </label>
+
+          <input
+            type="text"
+            maxLength={12}
+            placeholder="Enter Aadhaar Number"
+            value={dealerUserData?.aadhaar || ""}
+            onChange={(e) =>
+              setDealerUserData({
+                ...dealerUserData,
+                aadhaar: e.target.value.replace(/\D/g, ""),
+              })
+            }
+            className="w-full h-12 rounded-xl border border-gray-200
+            px-4 mt-3 bg-white"
+          />
+
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) =>
+              setDealerUserData({
+                ...dealerUserData,
+                aadhaarFile: e.target.files[0],
+              })
+            }
+            className="mt-4 w-full text-sm
+            file:mr-4 file:px-4 file:py-2
+            file:rounded-xl file:border-0
+            file:bg-[#0B2A4A]
+            file:text-white"
+          />
+
+        </div>
+
+      </div>
 
     </div>
 
   )}
 
-  {/* KEEP YOUR REMAINING STEP 3,4,5,6 CODE SAME */}
+  {/* STEP 3 — RESIDENTIAL */}
+
+  {dealerCurrentStep === 3 && (
+
+    <div>
+
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Residential Proof
+      </h2>
+
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Upload Light Bill or Rental Agreement
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {[
+          {
+            title: "Light Bill",
+            key: "lightBill",
+          },
+          {
+            title: "Rental Agreement",
+            key: "rentAgreement",
+          },
+        ].map((doc, index) => (
+
+          <div
+            key={index}
+            className="bg-[#F8FAFC]
+            border border-gray-200 rounded-3xl p-5"
+          >
+
+            <h3 className="font-semibold text-[#0B2A4A]">
+              {doc.title}
+            </h3>
+
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf"
+              onChange={(e) =>
+                setDealerUserData({
+                  ...dealerUserData,
+                  [doc.key]: e.target.files[0],
+                })
+              }
+              className="mt-5 w-full text-sm
+              file:mr-4 file:px-4 file:py-2
+              file:rounded-xl file:border-0
+              file:bg-[#0B2A4A]
+              file:text-white"
+            />
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+
+  )}
+
+  {/* STEP 4 — INCOME */}
+
+  {dealerCurrentStep === 4 && (
+
+    <div>
+
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Income Proof
+      </h2>
+
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Upload income verification documents
+      </p>
+
+      <select
+        value={dealerUserData?.employmentType || ""}
+        onChange={(e) =>
+          setDealerUserData({
+            ...dealerUserData,
+            employmentType: e.target.value,
+          })
+        }
+        className="w-full md:w-1/2 h-14 rounded-2xl border border-gray-200
+        bg-[#F8FAFC] px-5 mb-8"
+      >
+
+        <option value="">
+          Select Employment Type
+        </option>
+
+        <option value="Salaried">
+          Salaried
+        </option>
+
+        <option value="Self Employed">
+          Self Employed
+        </option>
+
+      </select>
+
+      {/* SALARIED */}
+
+      {dealerUserData?.employmentType === "Salaried" && (
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {[
+            "Appointment Letter",
+            "3 Months Salary Slips",
+            "6 Months Bank Statement",
+          ].map((doc, index) => (
+
+            <div
+              key={index}
+              className="bg-[#F8FAFC]
+              border border-gray-200 rounded-3xl p-5"
+            >
+
+              <h3 className="font-semibold text-[#0B2A4A]">
+                {doc}
+              </h3>
+
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                className="mt-5 w-full text-sm
+                file:mr-4 file:px-4 file:py-2
+                file:rounded-xl file:border-0
+                file:bg-[#0B2A4A]
+                file:text-white"
+              />
+
+            </div>
+
+          ))}
+
+        </div>
+
+      )}
+
+      {/* SELF EMPLOYED */}
+
+      {dealerUserData?.employmentType === "Self Employed" && (
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {[
+            "ITR Copy",
+            "6 Months Bank Statement",
+          ].map((doc, index) => (
+
+            <div
+              key={index}
+              className="bg-[#F8FAFC]
+              border border-gray-200 rounded-3xl p-5"
+            >
+
+              <h3 className="font-semibold text-[#0B2A4A]">
+                {doc}
+              </h3>
+
+              <input
+                type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
+                className="mt-5 w-full text-sm
+                file:mr-4 file:px-4 file:py-2
+                file:rounded-xl file:border-0
+                file:bg-[#0B2A4A]
+                file:text-white"
+              />
+
+            </div>
+
+          ))}
+
+        </div>
+
+      )}
+
+    </div>
+
+  )}
+
+  {/* STEP 5 — VEHICLE */}
+
+  {dealerCurrentStep === 5 && (
+
+    <div>
+
+      <h2 className="text-2xl font-bold text-[#0B2A4A]">
+        Vehicle Documents
+      </h2>
+
+      <p className="text-sm text-gray-500 mt-2 mb-8">
+        Upload vehicle verification documents
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {[
+          "RC Copy",
+          "Insurance Copy",
+          "Front Car Image",
+          "Rear Car Image",
+          "Chassis Number Image",
+          "Odometer Image (KM Visible)",
+        ].map((doc, index) => (
+
+          <div
+            key={index}
+            className="bg-[#FFF7F7]
+            border border-red-200 rounded-3xl p-5"
+          >
+
+            <h3 className="font-semibold text-[#0B2A4A]">
+              {doc}
+            </h3>
+
+            <input
+              type="file"
+              accept=".jpg,.jpeg,.png,.pdf"
+              className="mt-5 w-full text-sm
+              file:mr-4 file:px-4 file:py-2
+              file:rounded-xl file:border-0
+              file:bg-[#0B2A4A]
+              file:text-white"
+            />
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
+
+  )}
+
+  {/* STEP 6 — VERIFY */}
+
+  {dealerCurrentStep === 6 && (
+
+    <div>
+
+      <div className="text-center mb-8">
+
+        <div className="w-24 h-24 mx-auto rounded-full bg-[#EAFBF8]
+        flex items-center justify-center text-5xl">
+
+          ✅
+
+        </div>
+
+        <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">
+          Verify Customer Details
+        </h2>
+
+        <p className="text-gray-500 mt-3">
+          Please verify all details before final submission
+        </p>
+
+      </div>
+
+      <div className="bg-[#F8FAFC] rounded-3xl p-6">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+          <div>
+            <p className="text-xs text-gray-500">
+              Full Name
+            </p>
+
+            <p className="font-semibold text-[#0B2A4A]">
+              {dealerUserData?.name}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-gray-500">
+              Mobile
+            </p>
+
+            <p className="font-semibold text-[#0B2A4A]">
+              {dealerUserData?.mobile}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-gray-500">
+              PAN
+            </p>
+
+            <p className="font-semibold text-[#0B2A4A]">
+              {dealerUserData?.pan}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs text-gray-500">
+              Employment
+            </p>
+
+            <p className="font-semibold text-[#0B2A4A]">
+              {dealerUserData?.employmentType}
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  )}
 
   {/* FOOTER */}
 
@@ -982,7 +1220,7 @@ const weekLabels = [
       <button
         onClick={() => {
 
-          alert("Customer added successfully");
+          alert("Customer documents submitted for approval");
 
           setShowAddCustomerModal(false);
 
