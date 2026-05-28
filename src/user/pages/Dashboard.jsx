@@ -696,50 +696,86 @@ const [residentialType, setResidentialType] =
     {/* DOCUMENTS */}
 
     {(employmentType === "Salaried" ||
-      employmentType === "Government Employee") && (
+  employmentType === "Government Employee") && (
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
 
-        {[
-          "Salary Slip",
-          "Bank Statement",
-        ].map((doc, index) => (
+    {[
+      {
+        title: "Salary Slips",
+        subtitle: "Last 3 Months",
+      },
 
-          <div
-            key={index}
-            className="border border-gray-200 rounded-2xl p-5 bg-[#F8FAFC]"
-          >
+      {
+        title: "Bank Statement",
+        subtitle: "Last 6 Months",
+      },
+
+      {
+        title: "Appointment Letter",
+        subtitle: "Company Appointment Copy",
+      },
+
+    ].map((doc, index) => (
+
+      <div
+        key={index}
+        className="border border-gray-200 rounded-2xl p-5 bg-[#F8FAFC]"
+      >
+
+        {/* TOP */}
+
+        <div className="flex items-center justify-between">
+
+          <div>
 
             <h3 className="font-semibold text-[#0B2A4A]">
-              {doc}
+              {doc.title}
             </h3>
 
-            <p className="text-xs text-gray-500 mt-2">
-              Accepted: JPG, PNG, PDF, DOC
+            <p className="text-xs text-[#27D3C3] mt-1 font-medium">
+              {doc.subtitle}
             </p>
-
-            <p className="text-xs text-gray-400 mt-1">
-              Max Size: 5MB
-            </p>
-
-            <input
-              type="file"
-              accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-              className="mt-4 text-sm w-full
-              file:mr-4 file:px-4 file:py-2
-              file:rounded-xl file:border-0
-              file:bg-[#0B2A4A]
-              file:text-white
-              file:text-xs file:font-semibold"
-            />
 
           </div>
 
-        ))}
+          <span className="text-red-500 text-xs font-bold">
+            REQUIRED
+          </span>
+
+        </div>
+
+        {/* FILE INFO */}
+
+        <p className="text-xs text-gray-500 mt-4">
+          Accepted: JPG, PNG, PDF, DOC
+        </p>
+
+        <p className="text-xs text-gray-400 mt-1">
+          Max Size: 5MB
+        </p>
+
+        {/* FILE INPUT */}
+
+        <input
+          type="file"
+          accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+          className="mt-4 text-sm w-full
+          file:mr-4 file:px-4 file:py-2
+          file:rounded-xl file:border-0
+          file:bg-[#0B2A4A]
+          file:text-white
+          file:text-xs file:font-semibold
+          hover:file:bg-[#081f36]"
+        />
 
       </div>
 
-    )}
+    ))}
+
+  </div>
+
+)}
 
     {employmentType === "Self Employed" && (
 
@@ -794,79 +830,123 @@ const [residentialType, setResidentialType] =
 
                 {currentStep === 4 && (
 
-                  <div>
+  <div>
 
-                    <h2 className="text-xl font-bold text-[#0B2A4A] mb-1">
-                      Vehicle Documents
-                    </h2>
+    <h2 className="text-xl font-bold text-[#0B2A4A] mb-1">
+      Vehicle Documents
+    </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+    <p className="text-sm text-gray-500 mt-2 mb-6">
+      Upload all required vehicle verification documents and images
+    </p>
 
-                      {/* RC */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
 
-                      <div className="border border-red-200 rounded-2xl p-5 bg-[#FFF7F7]">
+      {[
+        {
+          key: "rc",
+          title: "RC Copy",
+          subtitle: "Registration Certificate",
+        },
 
-                        <div className="flex items-center justify-between">
+        {
+          key: "insurance",
+          title: "Insurance Copy",
+          subtitle: "Valid Insurance Document",
+        },
 
-                          <h3 className="font-semibold text-[#0B2A4A]">
-                            RC Picture
-                          </h3>
+        {
+          key: "odometer",
+          title: "Odometer Reading",
+          subtitle: "KM Reading Must Be Visible",
+        },
 
-                          <span className="text-red-500 text-xs font-bold">
-                            REQUIRED
-                          </span>
+        {
+          key: "chasis",
+          title: "Chassis Number",
+          subtitle: "Clear Chassis Number Image",
+        },
 
-                        </div>
+        {
+          key: "front",
+          title: "Car Front Side",
+          subtitle: "Front Side Vehicle Picture",
+        },
 
-                        <input
-                          type="file"
-                          accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-                          onChange={(e) =>
-                            setVehicleDocs({
-                              ...vehicleDocs,
-                              rc: e.target.files[0],
-                            })
-                          }
-                          className="mt-4 text-sm w-full"
-                        />
+        {
+          key: "back",
+          title: "Car Back Side",
+          subtitle: "Rear Side Vehicle Picture",
+        },
 
-                      </div>
+      ].map((doc, index) => (
 
-                      {/* INSURANCE */}
+        <div
+          key={index}
+          className="border border-red-200 rounded-2xl p-5 bg-[#FFF7F7]"
+        >
 
-                      <div className="border border-red-200 rounded-2xl p-5 bg-[#FFF7F7]">
+          {/* HEADER */}
 
-                        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
 
-                          <h3 className="font-semibold text-[#0B2A4A]">
-                            Insurance Copy
-                          </h3>
+            <div>
 
-                          <span className="text-red-500 text-xs font-bold">
-                            REQUIRED
-                          </span>
+              <h3 className="font-semibold text-[#0B2A4A]">
+                {doc.title}
+              </h3>
 
-                        </div>
+              <p className="text-xs text-[#27D3C3] mt-1 font-medium">
+                {doc.subtitle}
+              </p>
 
-                        <input
-                          type="file"
-                          accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-                          onChange={(e) =>
-                            setVehicleDocs({
-                              ...vehicleDocs,
-                              insurance: e.target.files[0],
-                            })
-                          }
-                          className="mt-4 text-sm w-full"
-                        />
+            </div>
 
-                      </div>
+            <span className="text-red-500 text-xs font-bold">
+              REQUIRED
+            </span>
 
-                    </div>
+          </div>
 
-                  </div>
+          {/* FILE INFO */}
 
-                )}
+          <p className="text-xs text-gray-500 mt-4">
+            Accepted: JPG, PNG, PDF
+          </p>
+
+          <p className="text-xs text-gray-400 mt-1">
+            Max Size: 5MB
+          </p>
+
+          {/* INPUT */}
+
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.pdf"
+            onChange={(e) =>
+              setVehicleDocs({
+                ...vehicleDocs,
+                [doc.key]: e.target.files[0],
+              })
+            }
+            className="mt-4 text-sm w-full
+            file:mr-4 file:px-4 file:py-2
+            file:rounded-xl file:border-0
+            file:bg-[#0B2A4A]
+            file:text-white
+            file:text-xs file:font-semibold
+            hover:file:bg-[#081f36]"
+          />
+
+        </div>
+
+      ))}
+
+    </div>
+
+  </div>
+
+)}
 
                 {/* STEP 5 */}
 

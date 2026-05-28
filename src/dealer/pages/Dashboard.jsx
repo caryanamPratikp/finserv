@@ -4,6 +4,26 @@ import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
 
+
+
+  /* Documents States */
+
+  const [showAddCustomerModal, setShowAddCustomerModal] =
+  useState(false);
+
+const [dealerCurrentStep, setDealerCurrentStep] =
+  useState(1);
+
+const [dealerEmploymentType, setDealerEmploymentType] =
+  useState("");
+
+const [dealerResidentialType, setDealerResidentialType] =
+  useState("");
+
+const [dealerVehicleDocs, setDealerVehicleDocs] =
+  useState({});
+
+
   /* SETTINGS STATES */
 
 const [showPasswordForm, setShowPasswordForm] =
@@ -431,42 +451,449 @@ const weekLabels = [
               {/* QUICK ACTIONS */}
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div
-                  className="bg-gradient-to-r from-[#0B2A4A] to-[#123E68]
-                  rounded-3xl p-6 text-white"
-                >
-                  <h2 className="text-xl font-bold">
-                    Add New Customer
-                  </h2>
 
-                  <p className="text-sm text-gray-300 mt-2">
-                    Create loan applications
-                    and upload documents
-                  </p>
+  {/* ADD CUSTOMER CARD */}
+
+  <div
+    onClick={() =>
+      setShowAddCustomerModal(true)
+    }
+    className="group relative overflow-hidden
+    bg-gradient-to-r from-[#0B2A4A] to-[#123E68]
+    rounded-3xl p-6 cursor-pointer
+    transition-all duration-300
+    hover:scale-[1.02] hover:shadow-2xl"
+  >
+
+    {/* WHITE OVERLAY */}
+
+    <div
+      className="absolute inset-0
+      bg-white
+      opacity-0
+      group-hover:opacity-100
+      transition-all duration-300"
+    ></div>
+
+    {/* CONTENT */}
+
+    <div className="relative z-10">
+
+      <h2
+        className="text-xl font-bold text-white
+        group-hover:text-[#0B2A4A]
+        transition-colors duration-300"
+      >
+        Add New Customer
+      </h2>
+
+      <p
+        className="text-sm text-gray-300 mt-2 leading-6
+        group-hover:text-[#0B2A4A]
+        transition-colors duration-300"
+      >
+        Create loan applications and upload customer documents
+      </p>
+
+    </div>
+
+  </div>
+
+  {/* DEALER PERFORMANCE */}
+
+  <div
+    onClick={() =>
+      setActiveMenu("Status")
+    }
+    className="group relative overflow-hidden
+    bg-gradient-to-r from-[#0B2A4A] to-[#123E68]
+    rounded-3xl p-6 cursor-pointer
+    transition-all duration-300
+    hover:scale-[1.02] hover:shadow-2xl"
+  >
+
+    {/* WHITE OVERLAY */}
+
+    <div
+      className="absolute inset-0
+      bg-white
+      opacity-0
+      group-hover:opacity-100
+      transition-all duration-300"
+    ></div>
+
+    {/* CONTENT */}
+
+    <div className="relative z-10">
+
+      <h2
+        className="text-xl font-bold text-white
+        group-hover:text-[#0B2A4A]
+        transition-colors duration-300"
+      >
+        Dealer Performance
+      </h2>
+
+      <p
+        className="text-sm text-gray-300 mt-2 leading-6
+        group-hover:text-[#0B2A4A]
+        transition-colors duration-300"
+      >
+        Track monthly approvals & customer growth
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+{/* ADD CUSTOMER MODAL */}
+
+{showAddCustomerModal && (
+
+  <div
+    className="fixed inset-0 z-50
+    bg-black/50 backdrop-blur-sm
+    flex items-center justify-center p-4"
+  >
+
+    {/* MODAL */}
+
+    <div
+      className="bg-white w-full max-w-6xl
+      max-h-[95vh] overflow-y-auto
+      rounded-[32px] shadow-2xl
+      animate-in fade-in zoom-in duration-200"
+    >
+
+      {/* HEADER */}
+
+      <div
+        className="sticky top-0 z-20
+        bg-white border-b border-gray-100
+        px-8 py-5 flex items-center justify-between"
+      >
+
+        <div>
+
+          <h2 className="text-2xl font-bold text-[#0B2A4A]">
+            Add New Customer
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Upload customer loan documents
+          </p>
+
+        </div>
+
+        <button
+          onClick={() =>
+            setShowAddCustomerModal(false)
+          }
+          className="w-11 h-11 rounded-full
+          bg-[#F4F6F9]
+          hover:bg-gray-200
+          flex items-center justify-center
+          text-lg font-bold"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      {/* BODY */}
+
+      <div className="p-8">
+
+        {/* STEPS */}
+
+        <div className="flex items-center gap-3 mb-8 overflow-x-auto">
+
+          {[
+            "KYC",
+            "Residential",
+            "Income",
+            "Vehicle",
+            "Verify",
+          ].map((step, index) => (
+
+            <div
+              key={index}
+              className={`px-5 py-2 rounded-2xl
+              text-sm font-semibold whitespace-nowrap
+              transition-all duration-200
+
+              ${
+                dealerCurrentStep === index + 1
+                  ? "bg-[#27D3C3] text-[#0B2A4A] shadow-lg scale-105"
+                  : "bg-[#F4F6F9] text-gray-500"
+              }`}
+            >
+              {index + 1}. {step}
+            </div>
+
+          ))}
+
+        </div>
+
+        {/* STEP 1 */}
+
+        {dealerCurrentStep === 1 && (
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+            {[
+              "PAN Card",
+              "Aadhar Card",
+              "Photograph",
+            ].map((doc, index) => (
+
+              <div
+                key={index}
+                className="border border-gray-200
+                rounded-2xl p-5 bg-[#F8FAFC]
+                hover:border-[#27D3C3]/40
+                transition-all"
+              >
+
+                <div className="flex items-center justify-between">
+
+                  <h3 className="font-semibold text-[#0B2A4A]">
+                    {doc}
+                  </h3>
+
+                  <span className="text-red-500 text-xs font-bold">
+                    REQUIRED
+                  </span>
+
                 </div>
 
-                <div className="bg-white rounded-3xl p-6 shadow-sm">
-                  <h2 className="text-xl font-bold text-[#0B2A4A]">
-                    Bank Actions
-                  </h2>
+                <input
+                  type="file"
+                  className="mt-5 text-sm w-full
+                  file:mr-4 file:px-4 file:py-2
+                  file:rounded-xl file:border-0
+                  file:bg-[#0B2A4A]
+                  file:text-white"
+                />
 
-                  <p className="text-sm text-gray-500 mt-2">
-                    Monitor approvals,
-                    verification & disbursal
-                  </p>
-                </div>
-
-                <div className="bg-white rounded-3xl p-6 shadow-sm">
-                  <h2 className="text-xl font-bold text-[#0B2A4A]">
-                    Dealer Performance
-                  </h2>
-
-                  <p className="text-sm text-gray-500 mt-2">
-                    Track monthly approvals &
-                    customer growth
-                  </p>
-                </div>
               </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+        {/* STEP 2 */}
+
+        {dealerCurrentStep === 2 && (
+
+          <div>
+
+            <h3 className="text-lg font-bold text-[#0B2A4A] mb-5">
+              Residential Proof
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+              {[
+                "Light Bill",
+                "Rental Agreement",
+              ].map((doc, index) => (
+
+                <button
+                  key={index}
+                  onClick={() =>
+                    setDealerResidentialType(doc)
+                  }
+                  className={`border rounded-3xl p-6 text-left transition-all
+
+                  ${
+                    dealerResidentialType === doc
+                      ? "border-[#27D3C3] bg-[#EAFBF8]"
+                      : "border-gray-200"
+                  }`}
+                >
+
+                  <h3 className="font-bold text-[#0B2A4A]">
+                    {doc}
+                  </h3>
+
+                </button>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        )}
+
+        {/* STEP 3 */}
+
+        {dealerCurrentStep === 3 && (
+
+          <div>
+
+            <label className="font-semibold text-[#0B2A4A] block mb-3">
+              Employment Type
+            </label>
+
+            <select
+              value={dealerEmploymentType}
+              onChange={(e) =>
+                setDealerEmploymentType(e.target.value)
+              }
+              className="w-full border border-gray-200
+              rounded-2xl px-5 py-4"
+            >
+
+              <option value="">
+                Select Employment Type
+              </option>
+
+              <option value="Salaried">
+                Salaried
+              </option>
+
+              <option value="Self Employed">
+                Self Employed
+              </option>
+
+            </select>
+
+          </div>
+
+        )}
+
+        {/* STEP 4 */}
+
+        {dealerCurrentStep === 4 && (
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+            {[
+              "RC Copy",
+              "Insurance Copy",
+              "Odometer Reading",
+              "Chassis Number",
+              "Car Front Side",
+              "Car Back Side",
+            ].map((doc, index) => (
+
+              <div
+                key={index}
+                className="border border-red-200
+                rounded-2xl p-5 bg-[#FFF7F7]"
+              >
+
+                <h3 className="font-semibold text-[#0B2A4A]">
+                  {doc}
+                </h3>
+
+                <input
+                  type="file"
+                  className="mt-5 text-sm w-full"
+                />
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+        {/* STEP 5 */}
+
+        {dealerCurrentStep === 5 && (
+
+          <div className="text-center py-12">
+
+            <div
+              className="w-24 h-24 mx-auto rounded-full
+              bg-[#EAFBF8]
+              flex items-center justify-center
+              text-5xl"
+            >
+              ✅
+            </div>
+
+            <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">
+              Verify & Submit
+            </h2>
+
+          </div>
+
+        )}
+
+        {/* FOOTER */}
+
+        <div className="flex items-center justify-between mt-10">
+
+          <button
+            disabled={dealerCurrentStep === 1}
+            onClick={() =>
+              setDealerCurrentStep((prev) => prev - 1)
+            }
+            className={`px-6 py-3 rounded-2xl font-semibold
+
+            ${
+              dealerCurrentStep === 1
+                ? "bg-gray-200 text-gray-400"
+                : "bg-[#F4F6F9]"
+            }`}
+          >
+            ← Previous
+          </button>
+
+          {dealerCurrentStep !== 5 ? (
+
+            <button
+              onClick={() =>
+                setDealerCurrentStep((prev) => prev + 1)
+              }
+              className="bg-[#0B2A4A]
+              hover:bg-[#081f36]
+              text-white px-6 py-3
+              rounded-2xl font-semibold"
+            >
+              Next →
+            </button>
+
+          ) : (
+
+            <button
+              onClick={() => {
+
+                alert("Customer added successfully");
+
+                setShowAddCustomerModal(false);
+
+                setDealerCurrentStep(1);
+              }}
+              className="bg-[#27D3C3]
+              hover:bg-[#1fb5a7]
+              text-[#0B2A4A]
+              px-8 py-3 rounded-2xl
+              font-bold"
+            >
+              Submit Documents
+            </button>
+
+          )}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
 
               {/* LIVE + RECENT */}
 
