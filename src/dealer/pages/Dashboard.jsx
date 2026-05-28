@@ -4,7 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
 
-
+const [dealerUserData, setDealerUserData] = useState({
+  name: "",
+  mobile: "",
+  email: "",
+  city: "",
+  state: "",
+  pincode: "",
+  address: "",
+});
 
   /* Documents States */
 
@@ -606,288 +614,395 @@ const weekLabels = [
 
       <div className="p-8">
 
-        {/* STEPS */}
+  {/* STEPS */}
 
-        <div className="flex items-center gap-3 mb-8 overflow-x-auto">
+  <div className="flex items-center gap-3 mb-8 overflow-x-auto">
 
-          {[
-            "KYC",
-            "Residential",
-            "Income",
-            "Vehicle",
-            "Verify",
-          ].map((step, index) => (
+    {[
+      "Personal",
+      "KYC",
+      "Residential",
+      "Income",
+      "Vehicle",
+      "Verify",
+    ].map((step, index) => (
 
-            <div
-              key={index}
-              className={`px-5 py-2 rounded-2xl
-              text-sm font-semibold whitespace-nowrap
-              transition-all duration-200
+      <div
+        key={index}
+        className={`px-5 py-2 rounded-2xl
+        text-sm font-semibold whitespace-nowrap
+        transition-all duration-200
 
-              ${
-                dealerCurrentStep === index + 1
-                  ? "bg-[#27D3C3] text-[#0B2A4A] shadow-lg scale-105"
-                  : "bg-[#F4F6F9] text-gray-500"
-              }`}
-            >
-              {index + 1}. {step}
-            </div>
+        ${
+          dealerCurrentStep === index + 1
+            ? "bg-[#27D3C3] text-[#0B2A4A] shadow-lg scale-105"
+            : "bg-[#F4F6F9] text-gray-500"
+        }`}
+      >
+        {index + 1}. {step}
+      </div>
 
-          ))}
+    ))}
+
+  </div>
+
+  {/* STEP 1 — PERSONAL INFORMATION */}
+
+  {dealerCurrentStep === 1 && (
+
+    <div>
+
+      <div className="mb-8">
+
+        <h2 className="text-2xl font-bold text-[#0B2A4A]">
+          Personal Information
+        </h2>
+
+        <p className="text-sm text-gray-500 mt-2">
+          Enter customer personal and residential details
+        </p>
+
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* FULL NAME */}
+
+        <div>
+
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Full Name
+          </label>
+
+          <input
+            type="text"
+            placeholder="Enter Full Name"
+            value={dealerUserData?.name || ""}
+            onChange={(e) =>
+              setDealerUserData({
+                ...dealerUserData,
+                name: e.target.value,
+              })
+            }
+            className="w-full h-14 rounded-2xl
+            border border-gray-200 bg-[#F8FAFC]
+            px-5 text-sm text-[#0B2A4A]
+            outline-none transition-all duration-200
+            hover:border-[#27D3C3]/40
+            focus:border-[#27D3C3]
+            focus:ring-4 focus:ring-[#27D3C3]/10"
+          />
 
         </div>
 
-        {/* STEP 1 */}
+        {/* MOBILE */}
 
-        {dealerCurrentStep === 1 && (
+        <div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Mobile Number
+          </label>
 
-            {[
-              "PAN Card",
-              "Aadhar Card",
-              "Photograph",
-            ].map((doc, index) => (
+          <input
+            type="text"
+            maxLength={10}
+            placeholder="Enter Mobile Number"
+            value={dealerUserData?.mobile || ""}
+            onChange={(e) => {
 
-              <div
-                key={index}
-                className="border border-gray-200
-                rounded-2xl p-5 bg-[#F8FAFC]
-                hover:border-[#27D3C3]/40
-                transition-all"
-              >
+              const value =
+                e.target.value.replace(/\D/g, "");
 
-                <div className="flex items-center justify-between">
+              setDealerUserData({
+                ...dealerUserData,
+                mobile: value,
+              });
 
-                  <h3 className="font-semibold text-[#0B2A4A]">
-                    {doc}
-                  </h3>
+            }}
+            className="w-full h-14 rounded-2xl
+            border border-gray-200 bg-[#F8FAFC]
+            px-5 text-sm text-[#0B2A4A]
+            outline-none transition-all duration-200
+            hover:border-[#27D3C3]/40
+            focus:border-[#27D3C3]
+            focus:ring-4 focus:ring-[#27D3C3]/10"
+          />
 
-                  <span className="text-red-500 text-xs font-bold">
-                    REQUIRED
-                  </span>
+        </div>
 
-                </div>
+        {/* EMAIL */}
 
-                <input
-                  type="file"
-                  className="mt-5 text-sm w-full
-                  file:mr-4 file:px-4 file:py-2
-                  file:rounded-xl file:border-0
-                  file:bg-[#0B2A4A]
-                  file:text-white"
-                />
+        <div>
 
-              </div>
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Email Address
+          </label>
 
-            ))}
-
-          </div>
-
-        )}
-
-        {/* STEP 2 */}
-
-        {dealerCurrentStep === 2 && (
-
-          <div>
-
-            <h3 className="text-lg font-bold text-[#0B2A4A] mb-5">
-              Residential Proof
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-              {[
-                "Light Bill",
-                "Rental Agreement",
-              ].map((doc, index) => (
-
-                <button
-                  key={index}
-                  onClick={() =>
-                    setDealerResidentialType(doc)
-                  }
-                  className={`border rounded-3xl p-6 text-left transition-all
-
-                  ${
-                    dealerResidentialType === doc
-                      ? "border-[#27D3C3] bg-[#EAFBF8]"
-                      : "border-gray-200"
-                  }`}
-                >
-
-                  <h3 className="font-bold text-[#0B2A4A]">
-                    {doc}
-                  </h3>
-
-                </button>
-
-              ))}
-
-            </div>
-
-          </div>
-
-        )}
-
-        {/* STEP 3 */}
-
-        {dealerCurrentStep === 3 && (
-
-          <div>
-
-            <label className="font-semibold text-[#0B2A4A] block mb-3">
-              Employment Type
-            </label>
-
-            <select
-              value={dealerEmploymentType}
-              onChange={(e) =>
-                setDealerEmploymentType(e.target.value)
-              }
-              className="w-full border border-gray-200
-              rounded-2xl px-5 py-4"
-            >
-
-              <option value="">
-                Select Employment Type
-              </option>
-
-              <option value="Salaried">
-                Salaried
-              </option>
-
-              <option value="Self Employed">
-                Self Employed
-              </option>
-
-            </select>
-
-          </div>
-
-        )}
-
-        {/* STEP 4 */}
-
-        {dealerCurrentStep === 4 && (
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-            {[
-              "RC Copy",
-              "Insurance Copy",
-              "Odometer Reading",
-              "Chassis Number",
-              "Car Front Side",
-              "Car Back Side",
-            ].map((doc, index) => (
-
-              <div
-                key={index}
-                className="border border-red-200
-                rounded-2xl p-5 bg-[#FFF7F7]"
-              >
-
-                <h3 className="font-semibold text-[#0B2A4A]">
-                  {doc}
-                </h3>
-
-                <input
-                  type="file"
-                  className="mt-5 text-sm w-full"
-                />
-
-              </div>
-
-            ))}
-
-          </div>
-
-        )}
-
-        {/* STEP 5 */}
-
-        {dealerCurrentStep === 5 && (
-
-          <div className="text-center py-12">
-
-            <div
-              className="w-24 h-24 mx-auto rounded-full
-              bg-[#EAFBF8]
-              flex items-center justify-center
-              text-5xl"
-            >
-              ✅
-            </div>
-
-            <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">
-              Verify & Submit
-            </h2>
-
-          </div>
-
-        )}
-
-        {/* FOOTER */}
-
-        <div className="flex items-center justify-between mt-10">
-
-          <button
-            disabled={dealerCurrentStep === 1}
-            onClick={() =>
-              setDealerCurrentStep((prev) => prev - 1)
+          <input
+            type="email"
+            placeholder="Enter Email Address"
+            value={dealerUserData?.email || ""}
+            onChange={(e) =>
+              setDealerUserData({
+                ...dealerUserData,
+                email: e.target.value,
+              })
             }
-            className={`px-6 py-3 rounded-2xl font-semibold
+            className="w-full h-14 rounded-2xl
+            border border-gray-200 bg-[#F8FAFC]
+            px-5 text-sm text-[#0B2A4A]
+            outline-none transition-all duration-200
+            hover:border-[#27D3C3]/40
+            focus:border-[#27D3C3]
+            focus:ring-4 focus:ring-[#27D3C3]/10"
+          />
 
-            ${
-              dealerCurrentStep === 1
-                ? "bg-gray-200 text-gray-400"
-                : "bg-[#F4F6F9]"
-            }`}
-          >
-            ← Previous
-          </button>
+        </div>
 
-          {dealerCurrentStep !== 5 ? (
+        {/* CITY */}
 
-            <button
-              onClick={() =>
-                setDealerCurrentStep((prev) => prev + 1)
-              }
-              className="bg-[#0B2A4A]
-              hover:bg-[#081f36]
-              text-white px-6 py-3
-              rounded-2xl font-semibold"
-            >
-              Next →
-            </button>
+        <div>
 
-          ) : (
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            City
+          </label>
 
-            <button
-              onClick={() => {
+          <input
+            type="text"
+            placeholder="Enter City"
+            value={dealerUserData?.city || ""}
+            onChange={(e) =>
+              setDealerUserData({
+                ...dealerUserData,
+                city: e.target.value,
+              })
+            }
+            className="w-full h-14 rounded-2xl
+            border border-gray-200 bg-[#F8FAFC]
+            px-5 text-sm text-[#0B2A4A]
+            outline-none transition-all duration-200
+            hover:border-[#27D3C3]/40
+            focus:border-[#27D3C3]
+            focus:ring-4 focus:ring-[#27D3C3]/10"
+          />
 
-                alert("Customer added successfully");
+        </div>
 
-                setShowAddCustomerModal(false);
+        {/* STATE */}
 
-                setDealerCurrentStep(1);
-              }}
-              className="bg-[#27D3C3]
-              hover:bg-[#1fb5a7]
-              text-[#0B2A4A]
-              px-8 py-3 rounded-2xl
-              font-bold"
-            >
-              Submit Documents
-            </button>
+        <div>
 
-          )}
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            State
+          </label>
+
+          <input
+            type="text"
+            placeholder="Enter State"
+            value={dealerUserData?.state || ""}
+            onChange={(e) =>
+              setDealerUserData({
+                ...dealerUserData,
+                state: e.target.value,
+              })
+            }
+            className="w-full h-14 rounded-2xl
+            border border-gray-200 bg-[#F8FAFC]
+            px-5 text-sm text-[#0B2A4A]
+            outline-none transition-all duration-200
+            hover:border-[#27D3C3]/40
+            focus:border-[#27D3C3]
+            focus:ring-4 focus:ring-[#27D3C3]/10"
+          />
+
+        </div>
+
+        {/* PINCODE */}
+
+        <div>
+
+          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+            Pincode
+          </label>
+
+          <input
+            type="text"
+            maxLength={6}
+            placeholder="Enter 6 Digit Pincode"
+            value={dealerUserData?.pincode || ""}
+            onChange={(e) => {
+
+              const value =
+                e.target.value.replace(/\D/g, "");
+
+              setDealerUserData({
+                ...dealerUserData,
+                pincode: value,
+              });
+
+            }}
+            className="w-full h-14 rounded-2xl
+            border border-gray-200 bg-[#F8FAFC]
+            px-5 text-sm text-[#0B2A4A]
+            outline-none transition-all duration-200
+            hover:border-[#27D3C3]/40
+            focus:border-[#27D3C3]
+            focus:ring-4 focus:ring-[#27D3C3]/10"
+          />
 
         </div>
 
       </div>
+
+      {/* ADDRESS */}
+
+      <div className="mt-6">
+
+        <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
+          Residential Address
+        </label>
+
+        <textarea
+          rows={5}
+          placeholder="Enter Complete Residential Address"
+          value={dealerUserData?.address || ""}
+          onChange={(e) =>
+            setDealerUserData({
+              ...dealerUserData,
+              address: e.target.value,
+            })
+          }
+          className="w-full rounded-2xl
+          border border-gray-200 bg-[#F8FAFC]
+          px-5 py-4 text-sm text-[#0B2A4A]
+          outline-none resize-none
+          transition-all duration-200
+          hover:border-[#27D3C3]/40
+          focus:border-[#27D3C3]
+          focus:ring-4 focus:ring-[#27D3C3]/10"
+        />
+
+      </div>
+
+    </div>
+
+  )}
+
+  {/* STEP 2 — KYC */}
+
+  {dealerCurrentStep === 2 && (
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+      {[
+        "PAN Card",
+        "Aadhar Card",
+        "Photograph",
+      ].map((doc, index) => (
+
+        <div
+          key={index}
+          className="border border-gray-200
+          rounded-2xl p-5 bg-[#F8FAFC]
+          hover:border-[#27D3C3]/40
+          transition-all"
+        >
+
+          <div className="flex items-center justify-between">
+
+            <h3 className="font-semibold text-[#0B2A4A]">
+              {doc}
+            </h3>
+
+            <span className="text-red-500 text-xs font-bold">
+              REQUIRED
+            </span>
+
+          </div>
+
+          <p className="text-xs text-gray-500 mt-3">
+            Accepted: JPG, PNG, PDF
+          </p>
+
+          <input
+            type="file"
+            className="mt-5 text-sm w-full
+            file:mr-4 file:px-4 file:py-2
+            file:rounded-xl file:border-0
+            file:bg-[#0B2A4A]
+            file:text-white"
+          />
+
+        </div>
+
+      ))}
+
+    </div>
+
+  )}
+
+  {/* KEEP YOUR REMAINING STEP 3,4,5,6 CODE SAME */}
+
+  {/* FOOTER */}
+
+  <div className="flex items-center justify-between mt-10">
+
+    <button
+      disabled={dealerCurrentStep === 1}
+      onClick={() =>
+        setDealerCurrentStep((prev) => prev - 1)
+      }
+      className={`px-6 py-3 rounded-2xl font-semibold
+
+      ${
+        dealerCurrentStep === 1
+          ? "bg-gray-200 text-gray-400"
+          : "bg-[#F4F6F9]"
+      }`}
+    >
+      ← Previous
+    </button>
+
+    {dealerCurrentStep !== 6 ? (
+
+      <button
+        onClick={() =>
+          setDealerCurrentStep((prev) => prev + 1)
+        }
+        className="bg-[#0B2A4A]
+        hover:bg-[#081f36]
+        text-white px-6 py-3
+        rounded-2xl font-semibold"
+      >
+        Next →
+      </button>
+
+    ) : (
+
+      <button
+        onClick={() => {
+
+          alert("Customer added successfully");
+
+          setShowAddCustomerModal(false);
+
+          setDealerCurrentStep(1);
+
+        }}
+        className="bg-[#27D3C3]
+        hover:bg-[#1fb5a7]
+        text-[#0B2A4A]
+        px-8 py-3 rounded-2xl
+        font-bold"
+      >
+        Submit Documents
+      </button>
+
+    )}
+
+  </div>
+
+</div>
 
     </div>
 
@@ -1038,13 +1153,20 @@ const weekLabels = [
       </div>
 
       <button
-        className="bg-[#27D3C3]
-        text-[#0B2A4A]
-        px-6 py-3 rounded-2xl
-        font-bold"
-      >
-        + Add User
-      </button>
+  onClick={() => {
+    setActiveMenu("Dashboard");
+    setShowAddCustomerModal(true);
+    setDealerCurrentStep(1);
+  }}
+  className="bg-[#27D3C3]
+  hover:bg-[#1fb5a7]
+  text-[#0B2A4A]
+  px-6 py-3 rounded-2xl
+  font-bold transition-all duration-200
+  hover:scale-[1.02]"
+>
+  + Add User
+</button>
     </div>
 
     {/* USER LIST */}
