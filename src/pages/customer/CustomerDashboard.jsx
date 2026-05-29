@@ -1,10 +1,17 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import api from "../../services/api";
+
 import Sidebar from "../../components/customer/Sidebar";
 
+import {
+  uploadDocument,
+} from "../../services/documentService";
+
 const Dashboard = () => {
+
 
 /* SETTINGS */
 
@@ -75,6 +82,32 @@ const [residentialType, setResidentialType] =
 
   const [documentsSubmitted, setDocumentsSubmitted] =
     useState(false);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const docRes = await api.get("/documents/user/1");
+      const statusRes = await api.get("/user/status/1");
+
+      const docs = docRes.data.data || [];
+
+      setUploadedDocuments(docs);
+
+      setUserData((prev) => ({
+        ...prev,
+        status: statusRes.data.data.status,
+      }));
+
+      setDocumentsSubmitted(
+        statusRes.data.data.status === "Documents Submitted"
+      );
+    } catch (err) {
+      console.error("Init load failed", err);
+    }
+  };
+
+  fetchData();
+}, []);
+
 
   /* VEHICLE DOCS */
 
@@ -83,6 +116,35 @@ const [residentialType, setResidentialType] =
       rc: null,
       insurance: null,
     });
+
+    const [showPreviewModal, setShowPreviewModal] =
+  useState(false);
+
+const [selectedDocument, setSelectedDocument] =
+  useState(null);
+
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+const [finalSubmitting, setFinalSubmitting] =
+  useState(false);
+
+  const openPreview = async (doc) => {
+  try {
+    const res = await fetch(
+      `http://localhost:8081/api/documents/preview/${doc.documentId}`
+    );
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+
+    setPreviewUrl(url);
+    setSelectedDocument(doc);
+    setShowPreviewModal(true);
+  } catch (err) {
+    console.error("Preview Error:", err);
+  }
+};
+
 
   /* USER DATA */
 
@@ -97,6 +159,67 @@ const [residentialType, setResidentialType] =
       documentsUploaded: 6,
       totalDocuments: 8,
     });
+
+    const [documentLoading, setDocumentLoading] =
+  useState(false);
+
+const [uploadedDocuments, setUploadedDocuments] =
+  useState([]);
+
+  const handleDocumentUpload = async (
+  file,
+  documentType
+) => {
+
+  if (!file) {
+    alert("Please Select File");
+    return;
+  }
+
+  try {
+
+    setDocumentLoading(true);
+
+    const formData = new FormData();
+
+    formData.append("userId", 1); // logged in user id
+    formData.append("type", documentType);
+    formData.append("file", file);
+
+    console.log("UPLOAD PAYLOAD");
+
+    const res =
+      await uploadDocument(formData);
+
+    console.log(
+      "DOCUMENT UPLOAD RESPONSE :",
+      res.data
+    );
+
+    alert(
+      `${documentType} Uploaded Successfully`
+    );
+
+    setUploadedDocuments((prev) => [...prev, res.data.data]);
+
+  } catch (error) {
+
+    console.error(
+      "DOCUMENT UPLOAD ERROR :",
+      error
+    );
+
+    alert(
+      error?.response?.data?.message ||
+      "Document Upload Failed"
+    );
+
+  } finally {
+
+    setDocumentLoading(false);
+
+  }
+};
 
   /* STATUS STEPS */
 
@@ -566,12 +689,20 @@ const [residentialType, setResidentialType] =
           <input
             type="file"
             accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) =>
-              setUserData({
-                ...userData,
-                panFile: e.target.files[0],
-              })
-            }
+            onChange={async (e) => {
+
+  const file = e.target.files[0];
+
+  setUserData({
+    ...userData,
+    panFile: file,
+  });
+
+  await handleDocumentUpload(
+    file,
+    "PAN"
+  );
+}}
             className="w-full text-sm
             file:mr-4 file:px-4 file:py-2
             file:rounded-xl file:border-0
@@ -583,47 +714,59 @@ const [residentialType, setResidentialType] =
 
         {/* AADHAAR */}
 
-        <div className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]">
+        {/* AADHAAR */}
 
-          <label className="text-sm font-semibold text-[#0B2A4A] block mb-3">
-            Aadhaar Number
-          </label>
+<div className="border border-gray-200 rounded-3xl p-5 bg-[#F8FAFC]">
 
-          <input
-            type="text"
-            maxLength={12}
-            placeholder="Enter Aadhaar Number"
-            value={userData?.aadhaar || ""}
-            onChange={(e) =>
-              setUserData({
-                ...userData,
-                aadhaar: e.target.value.replace(/\D/g, ""),
-              })
-            }
-            className="w-full h-14 rounded-2xl border border-gray-200 px-5"
-          />
+  <label className="text-sm font-semibold text-[#0B2A4A] block mb-3">
+    Aadhaar Number
+  </label>
 
-          <label className="text-sm font-semibold text-[#0B2A4A] block mt-5 mb-2">
-            Upload Aadhaar Card
-          </label>
+  <input
+    type="text"
+    maxLength={12}
+    placeholder="Enter Aadhaar Number"
+    value={userData?.aadhaar || ""}
+    onChange={(e) =>
+      setUserData({
+        ...userData,
+        aadhaar: e.target.value,
+      })
+    }
+    className="w-full h-14 rounded-2xl border border-gray-200 px-5"
+  />
 
-          <input
-            type="file"
-            accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) =>
-              setUserData({
-                ...userData,
-                aadhaarFile: e.target.files[0],
-              })
-            }
-            className="w-full text-sm
-            file:mr-4 file:px-4 file:py-2
-            file:rounded-xl file:border-0
-            file:bg-[#0B2A4A]
-            file:text-white"
-          />
+  <label className="text-sm font-semibold text-[#0B2A4A] block mt-5 mb-2">
+    Upload Aadhaar Card
+  </label>
 
-        </div>
+  <input
+    type="file"
+    accept=".jpg,.jpeg,.png,.pdf"
+    onChange={async (e) => {
+
+      const file = e.target.files[0];
+
+      if (!file) return;
+
+      setUserData((prev) => ({
+        ...prev,
+        aadhaarFile: file,
+      }));
+
+      await handleDocumentUpload(
+        file,
+        "AADHAAR"
+      );
+    }}
+    className="w-full text-sm
+    file:mr-4 file:px-4 file:py-2
+    file:rounded-xl file:border-0
+    file:bg-[#0B2A4A]
+    file:text-white"
+  />
+
+</div>
 
       </div>
 
@@ -705,12 +848,20 @@ const [residentialType, setResidentialType] =
           <input
             type="file"
             accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) =>
-              setUserData({
-                ...userData,
-                lightBill: e.target.files[0],
-              })
-            }
+            onChange={async (e) => {
+
+  const file = e.target.files[0];
+
+  setUserData({
+    ...userData,
+    lightBill: file,
+  });
+
+  await handleDocumentUpload(
+    file,
+    "LIGHT_BILL"
+  );
+}}
             className="mt-4 w-full text-sm
             file:mr-4 file:px-4 file:py-2
             file:rounded-xl file:border-0
@@ -735,12 +886,20 @@ const [residentialType, setResidentialType] =
           <input
             type="file"
             accept=".jpg,.jpeg,.png,.pdf"
-            onChange={(e) =>
-              setUserData({
-                ...userData,
-                rentAgreement: e.target.files[0],
-              })
-            }
+            onChange={async (e) => {
+
+  const file = e.target.files[0];
+
+  setUserData({
+    ...userData,
+    rentAgreement: file,
+  });
+
+  await handleDocumentUpload(
+    file,
+    "RENTAL_AGREEMENT"
+  );
+}}
             className="mt-4 w-full text-sm
             file:mr-4 file:px-4 file:py-2
             file:rounded-xl file:border-0
@@ -792,10 +951,19 @@ const [residentialType, setResidentialType] =
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {[
-            "Appointment Letter",
-            "3 Months Salary Slips",
-            "6 Months Bank Statement",
-          ].map((doc, index) => (
+  {
+    label: "Appointment Letter",
+    type: "APPOINTMENT_LETTER",
+  },
+  {
+    label: "3 Months Salary Slips",
+    type: "SALARY_SLIP",
+  },
+  {
+    label: "6 Months Bank Statement",
+    type: "BANK_STATEMENT",
+  },
+].map((doc, index) => (
 
             <div
               key={index}
@@ -803,11 +971,21 @@ const [residentialType, setResidentialType] =
             >
 
               <h3 className="font-semibold text-[#0B2A4A]">
-                {doc}
+                {doc.label}
               </h3>
 
               <input
-                type="file"
+  type="file"
+  accept=".jpg,.jpeg,.png,.pdf"
+  onChange={async (e) => {
+
+    const file = e.target.files[0];
+
+    await handleDocumentUpload(
+      file,
+      doc.type
+    );
+  }}
                 accept=".jpg,.jpeg,.png,.pdf"
                 className="mt-4 w-full text-sm
                 file:mr-4 file:px-4 file:py-2
@@ -831,9 +1009,15 @@ const [residentialType, setResidentialType] =
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {[
-            "ITR Copy",
-            "6 Months Bank Statement",
-          ].map((doc, index) => (
+  {
+    label: "ITR Copy",
+    type: "ITR_RETURN",
+  },
+  {
+    label: "6 Months Bank Statement",
+    type: "BANK_STATEMENT",
+  },
+].map((doc, index) => (
 
             <div
               key={index}
@@ -841,11 +1025,21 @@ const [residentialType, setResidentialType] =
             >
 
               <h3 className="font-semibold text-[#0B2A4A]">
-                {doc}
+                {doc.label}
               </h3>
 
               <input
-                type="file"
+  type="file"
+  accept=".jpg,.jpeg,.png,.pdf"
+  onChange={async (e) => {
+
+    const file = e.target.files[0];
+
+    await handleDocumentUpload(
+      file,
+      doc.type
+    );
+  }}
                 accept=".jpg,.jpeg,.png,.pdf"
                 className="mt-4 w-full text-sm
                 file:mr-4 file:px-4 file:py-2
@@ -883,13 +1077,31 @@ const [residentialType, setResidentialType] =
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {[
-          "RC Copy",
-          "Insurance Copy",
-          "Front Car Image",
-          "Rear Car Image",
-          "Chassis Number Image",
-          "Odometer Image (KM Visible)",
-        ].map((doc, index) => (
+  {
+    label: "RC Copy",
+    type: "RC",
+  },
+  {
+    label: "Insurance Copy",
+    type: "INSURANCE",
+  },
+  {
+    label: "Front Car Image",
+    type: "CAR_FRONT_SIDE_PHOTO",
+  },
+  {
+    label: "Rear Car Image",
+    type: "CAR_BACK_SIDE_PHOTO",
+  },
+  {
+    label: "Chassis Number Image",
+    type: "CHASSIS_NUMBER",
+  },
+  {
+    label: "Odometer Image (KM Visible)",
+    type: "ODOMETER_READING",
+  },
+].map((doc, index) => (
 
           <div
             key={index}
@@ -897,11 +1109,21 @@ const [residentialType, setResidentialType] =
           >
 
             <h3 className="font-semibold text-[#0B2A4A]">
-              {doc}
+              {doc.label}
             </h3>
 
             <input
-              type="file"
+  type="file"
+  accept=".jpg,.jpeg,.png,.pdf"
+  onChange={async (e) => {
+
+    const file = e.target.files[0];
+
+    await handleDocumentUpload(
+      file,
+      doc.type
+    );
+  }}
               accept=".jpg,.jpeg,.png,.pdf"
               className="mt-4 w-full text-sm
               file:mr-4 file:px-4 file:py-2
@@ -922,76 +1144,162 @@ const [residentialType, setResidentialType] =
 
   {/* STEP 6 â€” VERIFY */}
 
-  {currentStep === 6 && (
+  {/* STEP 6 — VERIFY */}
 
-    <div>
+{currentStep === 6 && (
 
-      <div className="text-center mb-8">
+  <div>
 
-        <div className="w-24 h-24 mx-auto rounded-full bg-[#EAFBF8]
-        flex items-center justify-center text-5xl">
-          âœ…
-        </div>
+    <div className="text-center mb-8">
 
-        <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">
-          Verify Details
-        </h2>
-
-        <p className="text-gray-500 mt-3">
-          Please verify all information before final submit
-        </p>
-
+      <div
+        className="w-24 h-24 mx-auto rounded-full
+        bg-[#EAFBF8]
+        flex items-center justify-center text-5xl"
+      >
+        ✅
       </div>
 
-      <div className="bg-[#F8FAFC] rounded-3xl p-6 space-y-4">
+      <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">
+        Verify Details
+      </h2>
 
-        <div>
-          <span className="font-semibold text-[#0B2A4A]">
-            Name:
-          </span>{" "}
-          {userData?.name}
-        </div>
+      <p className="text-gray-500 mt-3">
+        Please verify all uploaded documents before final submit
+      </p>
 
-        <div>
-          <span className="font-semibold text-[#0B2A4A]">
-            Mobile:
-          </span>{" "}
-          {userData?.mobile}
-        </div>
+    </div>
 
-        <div>
-          <span className="font-semibold text-[#0B2A4A]">
-            PAN:
-          </span>{" "}
-          {userData?.pan}
-        </div>
+    {/* USER DETAILS */}
 
-        <div>
-          <span className="font-semibold text-[#0B2A4A]">
-            Aadhaar:
-          </span>{" "}
-          {userData?.aadhaar}
-        </div>
+    <div
+      className="bg-[#F8FAFC]
+      rounded-3xl p-6 space-y-4 mb-8"
+    >
 
-        <div>
-          <span className="font-semibold text-[#0B2A4A]">
-            Employment:
-          </span>{" "}
-          {userData?.employmentType}
-        </div>
+      <div>
+        <span className="font-semibold text-[#0B2A4A]">
+          Name:
+        </span>{" "}
+        {userData?.name}
+      </div>
 
-        <div>
-          <span className="font-semibold text-[#0B2A4A]">
-            Address:
-          </span>{" "}
-          {userData?.address}
-        </div>
+      <div>
+        <span className="font-semibold text-[#0B2A4A]">
+          Mobile:
+        </span>{" "}
+        {userData?.mobile}
+      </div>
 
+      <div>
+        <span className="font-semibold text-[#0B2A4A]">
+          PAN:
+        </span>{" "}
+        {userData?.pan}
+      </div>
+
+      <div>
+        <span className="font-semibold text-[#0B2A4A]">
+          Aadhaar:
+        </span>{" "}
+        {userData?.aadhaar}
+      </div>
+
+      <div>
+        <span className="font-semibold text-[#0B2A4A]">
+          Employment:
+        </span>{" "}
+        {userData?.employmentType}
+      </div>
+
+      <div>
+        <span className="font-semibold text-[#0B2A4A]">
+          Address:
+        </span>{" "}
+        {userData?.address}
       </div>
 
     </div>
 
-  )}
+    {/* DOCUMENT PREVIEW GRID */}
+
+    <div>
+
+      <h3 className="text-xl font-bold text-[#0B2A4A] mb-5">
+        Uploaded Documents
+      </h3>
+
+      {uploadedDocuments.length === 0 ? (
+
+        <div
+          className="bg-[#FFF4F4]
+          border border-red-200
+          text-red-500
+          rounded-2xl p-5"
+        >
+          No documents uploaded yet.
+        </div>
+
+      ) : (
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+
+          {uploadedDocuments.map((doc, index) => (
+
+            <div
+              key={index}
+              className="bg-white border border-gray-200
+              rounded-3xl p-5 shadow-sm"
+            >
+
+              <div className="flex items-center justify-between">
+
+                <div>
+
+                  <h4 className="font-bold text-[#0B2A4A]">
+                    {doc.documenttype}
+                  </h4>
+
+                  <p className="text-xs text-gray-500 mt-1">
+                    Uploaded Successfully
+                  </p>
+
+                </div>
+
+                <div
+                  className="w-12 h-12 rounded-2xl
+                  bg-[#EAFBF8]
+                  flex items-center justify-center text-2xl"
+                >
+                  📄
+                </div>
+
+              </div>
+
+              <button
+                onClick={() => openPreview(doc)}
+                className="mt-5 w-full
+                bg-[#0B2A4A]
+                hover:bg-[#081f36]
+                text-white py-3 rounded-2xl
+                text-sm font-semibold"
+              >
+                View Document
+              </button>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      )}
+
+    </div>
+
+  </div>
+
+)}
 
   {/* BUTTONS */}
 
@@ -1028,25 +1336,134 @@ const [residentialType, setResidentialType] =
     ) : (
 
       <button
-        onClick={() => {
+  disabled={finalSubmitting}
+  onClick={async () => {
 
-          alert("Submitted For Approval Successfully");
+    try {
 
-          setCurrentStep(1);
+      setFinalSubmitting(true);
 
-        }}
-        className="bg-[#27D3C3] hover:bg-[#1fb5a7]
-        text-[#0B2A4A] px-8 py-3 rounded-2xl
-        text-sm font-bold"
-      >
-        Final Submit
-      </button>
+      console.log(
+        "FINAL DOCUMENTS :",
+        uploadedDocuments
+      );
+
+      alert(
+        "Documents Submitted Successfully"
+      );
+
+      setDocumentsSubmitted(true);
+
+      setUserData({
+        ...userData,
+        status: "Documents Submitted",
+      });
+
+      setCurrentStep(1);
+
+      setActiveMenu("Status");
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Submission Failed");
+
+    } finally {
+
+      setFinalSubmitting(false);
+
+    }
+
+  }}
+  className="bg-[#27D3C3] hover:bg-[#1fb5a7]
+  text-[#0B2A4A] px-8 py-3 rounded-2xl
+  text-sm font-bold disabled:opacity-50"
+>
+
+  {finalSubmitting
+    ? "Submitting..."
+    : "Final Submit"}
+
+</button>
 
     )}
 
   </div>
 
 </div>
+
+{/* DOCUMENT PREVIEW MODAL */}
+
+{showPreviewModal && selectedDocument && (
+
+  <div
+    className="fixed inset-0 z-50
+    bg-black/50 backdrop-blur-sm
+    flex items-center justify-center p-4"
+  >
+
+    <div
+      className="bg-white w-full max-w-4xl
+      rounded-3xl p-6 shadow-2xl"
+    >
+
+      {/* HEADER */}
+
+      <div className="flex items-center justify-between mb-5">
+
+        <div>
+
+          <h2 className="text-2xl font-bold text-[#0B2A4A]">
+            {selectedDocument.type}
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Document Preview
+          </p>
+
+        </div>
+
+        <button
+          onClick={() =>
+            setShowPreviewModal(false)
+          }
+          className="w-10 h-10 rounded-full
+          bg-[#F4F6F9]
+          hover:bg-gray-200
+          flex items-center justify-center"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      {/* PREVIEW */}
+
+      {/* PREVIEW */}
+<div
+  className="border border-gray-200
+  rounded-2xl overflow-hidden
+  h-[500px]"
+>
+  {previewUrl && (
+  <div className="border border-gray-200 rounded-2xl overflow-hidden h-[500px]">
+  {previewUrl && (
+    <iframe
+      src={previewUrl}
+      className="w-full h-full"
+      title="Document Preview"
+    />
+  )}
+</div>
+)}
+</div>
+
+    </div>
+
+  </div>
+
+)}
 
             </div>
 
