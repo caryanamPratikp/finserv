@@ -112,10 +112,15 @@ const Login = () => {
         JSON.stringify(userObject)
       );
 
+      // Save dealerCode separately for easy access
+      if (userObject.dealerCode) {
+        localStorage.setItem("dealerCode", userObject.dealerCode);
+      }
+
       // Save dealer code to ID mapping in localStorage for customer lookup
-      if (userObject.dealerCode && userObject.dealerId) {
+      if (userObject.dealerCode && (userObject.dealerId || userObject.id)) {
         const codeMap = JSON.parse(localStorage.getItem("dealerCodeMap") || "{}");
-        codeMap[userObject.dealerCode] = userObject.dealerId;
+        codeMap[userObject.dealerCode] = userObject.dealerId || userObject.id;
         localStorage.setItem("dealerCodeMap", JSON.stringify(codeMap));
       }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/dealer/Sidebar";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
@@ -37,6 +37,7 @@ const [dealerVehicleDocs, setDealerVehicleDocs] =
   const [documentLoading, setDocumentLoading] = useState(false);
   const [currentApplicationNumber, setCurrentApplicationNumber] = useState(null);
   const [currentCustomerUserId, setCurrentCustomerUserId] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -62,9 +63,9 @@ const [emailOtpStep, setEmailOtpStep] =
 
 const [profileData, setProfileData] =
   useState({
-    name: "Shiv Motors",
-    phone: "9876543210",
-    email: "dealer@gmail.com",
+    name: "",
+    phone: "",
+    email: "",
     dealerCode: localStorage.getItem("dealerCode") || "—",
   });
 
@@ -158,7 +159,7 @@ const [selectedRemark, setSelectedRemark] =
           documents,
           hasRemark: !!app.remark,
           remark: app.remark,
-          editable: app.status === 'PENDING' || app.status === 'REJECTED'
+          editable: true
         };
       });
       setUsers(mapped);
@@ -280,8 +281,8 @@ const [selectedRemark, setSelectedRemark] =
         alert(err?.response?.data?.message || err?.response?.data || "Failed to save KYC");
       }
     } else if (dealerCurrentStep === 3) {
-      if (!dealerUserData.city || !dealerUserData.state || !dealerUserData.pincode || !dealerUserData.address) {
-        alert("Please fill in all address fields: City, State, Pincode, and Complete Address");
+      if (!dealerUserData.city || !dealerUserData.state || !dealerUserData.pincode) {
+        alert("Please fill in all address fields: City, State, and Pincode");
         return;
       }
       if (!dealerUserData.pincode.match(/^[0-9]{6}$/)) {
@@ -365,80 +366,71 @@ const [selectedRemark, setSelectedRemark] =
     }
   };
 
+  const resetNewUserForm = () => {
+    setDealerCurrentStep(1);
+    setDealerUserData({ name: "", mobile: "", email: "", city: "", state: "", pincode: "", address: "", loanAmount: "" });
+    setUploadedDocuments([]);
+    setCurrentApplicationNumber(null);
+    setCurrentCustomerUserId(null);
+    setDealerEmploymentType("");
+    setDealerResidentialType("");
+    setIsEditMode(false);
+  };
+
   const handleFinalSubmit = async () => {
     try {
-      await api.post(`/loan-applications/submit/${currentApplicationNumber}`);
-      alert("Customer documents submitted for approval successfully!");
+      if (isEditMode) {
+        const payload = { fullName: dealerUserData.name, email: dealerUserData.email, mobileNumber: dealerUserData.mobile, loanAmount: parseFloat(dealerUserData.loanAmount) || 0, address: dealerUserData.address || '', city: dealerUserData.city || '', state: dealerUserData.state || '', pincode: dealerUserData.pincode || '' };
+        await api.put(`/loan-applications/personal/${currentApplicationNumber}`, payload);
+        alert('Customer details updated successfully!');
+      } else {
+        await api.post(`/loan-applications/submit/${currentApplicationNumber}`);
+        alert('Customer documents submitted for approval successfully!');
+      }
       setShowAddCustomerModal(false);
+      setIsEditMode(false);
       setDealerCurrentStep(1);
-      setDealerUserData({
-        name: "",
-        mobile: "",
-        email: "",
-        city: "",
-        state: "",
-        pincode: "",
-        address: "",
-        loanAmount: ""
-      });
+      setDealerUserData({ name: '', mobile: '', email: '', city: '', state: '', pincode: '', address: '', loanAmount: '' });
       setUploadedDocuments([]);
       setCurrentApplicationNumber(null);
       setCurrentCustomerUserId(null);
-
-      const storedDealer = JSON.parse(localStorage.getItem("dealerData"));
+      const storedDealer = JSON.parse(localStorage.getItem('dealerData'));
       const dealerId = storedDealer?.dealerId || storedDealer?.id;
-      if (dealerId) {
-        fetchApplications(dealerId);
-      }
+      if (dealerId) fetchApplications(dealerId);
     } catch (err) {
-      console.error("Final submit error:", err);
-      alert(err?.response?.data?.message || err?.response?.data || "Failed to submit application");
+      console.error('Final submit error:', err);
+      alert(err?.response?.data?.message || err?.response?.data || 'Failed to submit application');
     }
   };
 
-  const handleEditUser = async (user) => {
+    const handleEditUser = async (user) => {
     setCurrentApplicationNumber(user.applicationNumber);
     setCurrentCustomerUserId(user.userId);
-    setDealerUserData({
-      name: user.name,
-      mobile: user.mobile,
-      email: user.email || "",
-      dob: "",
-      loanAmount: user.loanAmount || "",
-      address: "",
-      city: "",
-      state: "",
-      pincode: ""
-    });
-    
+    setUploadedDocuments([]);
     try {
-      const res = await api.get(`/loan-applications/${user.applicationNumber}`);
-      const app = res.data;
+      const [appRes, docRes] = await Promise.all([
+        api.get(`/loan-applications/user/${user.userId}`),
+        api.get(`/documents/user/${user.userId}`)
+      ]);
+      const appList = appRes.data || [];
+      const app = appList.find(a => a.applicationNumber === user.applicationNumber) || appList[0];
       if (app) {
-        setDealerUserData({
-          name: app.fullName || "",
-          mobile: app.mobileNumber || "",
-          email: app.email || "",
-          dob: "",
-          loanAmount: app.loanAmount || "",
-          address: app.address || "",
-          city: app.city || "",
-          state: app.state || "",
-          pincode: app.pincode || "",
-          chassisNumber: app.chassisNumber || "",
-          odometerReading: app.odometerReading || ""
-        });
-        const docRes = await api.get(`/documents/user/${app.userId}`);
-        setUploadedDocuments(docRes.data.data || []);
+        setDealerUserData({ name: app.fullName||'', mobile: app.mobileNumber||'', email: app.email||'', dob: '', loanAmount: app.loanAmount||'', address: app.address||'', city: app.city||'', state: app.state||'', pincode: app.pincode||'', employmentType: app.employmentType==='SALARIED'?'Salaried':app.employmentType==='BUSINESS'?'Self Employed':'', chassisNumber: app.chassisNumber||'', odometerReading: app.odometerReading||'' });
+        const submittedStatuses = ['DOCUMENTS_SUBMITTED','DOCUMENTS_VERIFIED','SENT_TO_BANK','BANK_REVIEW','APPROVED','REJECTED'];
+        const submitted = submittedStatuses.includes(app.status);
+        setIsEditMode(submitted);
+        const stepMap = { PERSONAL_INFORMATION:1, KYC:2, RESIDENTIAL:3, INCOME:4, VEHICLE:5, VERIFY:6 };
+        setDealerCurrentStep(submitted ? 6 : (app.currentStep && stepMap[app.currentStep] ? stepMap[app.currentStep] : 1));
       }
+      setUploadedDocuments(docRes.data.data || []);
     } catch (err) {
-      console.error("Error fetching application details:", err);
+      console.error('Error fetching application details:', err);
+      setDealerCurrentStep(1);
     }
-    setDealerCurrentStep(1);
     setShowAddCustomerModal(true);
   };
 
-  const handleSaveProfile = async () => {
+    const handleSaveProfile = async () => {
     try {
       const storedDealer = JSON.parse(localStorage.getItem("dealerData"));
       const dealerId = storedDealer?.dealerId || storedDealer?.id;
@@ -500,6 +492,7 @@ const [selectedRemark, setSelectedRemark] =
 
   const fetchNotifications = async (dealerId) => {
     try {
+      // Fetch base notifications
       const res = await api.get(`/notifications/${dealerId}`);
       const sorted = (res.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       const feed = sorted.map((n) => {
@@ -508,36 +501,147 @@ const [selectedRemark, setSelectedRemark] =
         const diffMins = Math.floor(diffMs / 60000);
         let timeStr = "Just now";
         if (diffMins > 0) {
-          if (diffMins < 60) {
-            timeStr = `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
-          } else {
+          if (diffMins < 60) timeStr = `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
+          else {
             const diffHours = Math.floor(diffMins / 60);
-            if (diffHours < 24) {
-              timeStr = `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-            } else {
-              timeStr = date.toLocaleDateString();
-            }
+            timeStr = diffHours < 24 ? `${diffHours} hour${diffHours > 1 ? "s" : ""} ago` : date.toLocaleDateString();
           }
         }
-        return {
-          id: n.id,
-          message: n.message,
-          time: timeStr
-        };
+        return { id: n.id, message: n.message, time: timeStr };
       });
-      setActivityFeed(feed);
+
+      // Fetch document rejection/remark updates for dealer's customers
+      try {
+        const appsRes = await api.get(`/loan-applications/dealer/${dealerId}`);
+        const apps = appsRes.data || [];
+        const docFeed = [];
+
+        await Promise.all(apps.map(async (app) => {
+          if (!app.userId) return;
+          try {
+            const docRes = await api.get(`/documents/user/${app.userId}`);
+            const docs = docRes.data.data || [];
+            docs.forEach((doc) => {
+              const name = app.fullName || "Customer";
+              const label = docNames[doc.documentType] || (doc.documentType || "").replace(/_/g, " ");
+              if (doc.status === "REJECTED") {
+                docFeed.push({
+                  id: `rej-${doc.documentId}`,
+                  message: `❌ ${name}'s ${label} was rejected by admin${doc.remarks ? `: "${doc.remarks}"` : "."}`,
+                  time: "Recent",
+                  type: "rejected",
+                  documentId: doc.documentId,
+                  documentType: doc.documentType,
+                  userId: app.userId,
+                  customerName: name,
+                  label,
+                });
+              } else if (doc.remarks && doc.status !== "REJECTED") {
+                docFeed.push({
+                  id: `rem-${doc.documentId}`,
+                  message: `💬 Admin added remark on ${name}'s ${label}: "${doc.remarks}"`,
+                  time: "Recent",
+                  type: "remark",
+                  documentId: doc.documentId,
+                  documentType: doc.documentType,
+                  userId: app.userId,
+                  customerName: name,
+                  label,
+                });
+              } else if (doc.status === "APPROVED") {
+                docFeed.push({
+                  id: `apv-${doc.documentId}`,
+                  message: `✅ ${name}'s ${label} was approved by admin.`,
+                  time: "Recent",
+                  type: "approved",
+                });
+              }
+            });
+          } catch (_) {}
+        }));
+
+        // Merge: doc updates first (most actionable), then notifications
+        setActivityFeed([...docFeed, ...feed]);
+      } catch (_) {
+        setActivityFeed(feed);
+      }
     } catch (err) {
       console.error("Failed to fetch notifications:", err);
     }
   };
 
   const [activityFeed, setActivityFeed] = useState([]);
+  const [previewDoc, setPreviewDoc] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+
+  const docNames = {
+    PAN: "PAN Card",
+    AADHAAR: "Aadhaar Card",
+    AADHAAR_FRONT: "Aadhaar Front",
+    AADHAAR_BACK: "Aadhaar Back",
+    LIGHT_BILL: "Light Bill",
+    RENTAL_AGREEMENT: "Rental Agreement",
+    RC: "RC Copy",
+    INSURANCE: "Insurance Copy",
+    SALARY_SLIP: "Salary Slip",
+    APPOINTMENT_LETTER: "Appointment Letter",
+    ITR_RETURN: "ITR Copy",
+    BANK_STATEMENT: "Bank Statement",
+    CAR_FRONT_SIDE_PHOTO: "Car Front Photo",
+    CAR_BACK_SIDE_PHOTO: "Car Back Photo",
+    CHASSIS_NUMBER: "Chassis Number",
+    ODOMETER_READING: "Odometer Reading",
+  };
+
+  const openPreview = async (doc) => {
+    try {
+      const res = await fetch(`${api.defaults.baseURL}/documents/preview/${doc.documentId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      setPreviewUrl(url);
+      setPreviewDoc(doc);
+      setShowPreviewModal(true);
+    } catch (err) {
+      console.error("Preview error:", err);
+      alert("Failed to load document preview");
+    }
+  };
+
+  const handleReuploadDocument = async (documentId, documentType, file, userId) => {
+    if (!file) return;
+    const resolvedUserId = userId || currentCustomerUserId;
+    try {
+      setDocumentLoading(true);
+      await api.delete(`/documents/${documentId}`);
+      const formData = new FormData();
+      formData.append("userId", resolvedUserId);
+      formData.append("type", documentType);
+      formData.append("file", file);
+      const res = await api.post("/documents/upload", formData);
+      const uploadedDoc = res.data.data;
+      setUploadedDocuments((prev) => [
+        ...prev.filter((d) => d.documentId !== documentId),
+        uploadedDoc,
+      ]);
+      alert(`${documentType} re-uploaded successfully!`);
+      // Refresh notifications to reflect updated status
+      const storedDealer = JSON.parse(localStorage.getItem("dealerData"));
+      const dealerId = storedDealer?.dealerId || storedDealer?.id;
+      if (dealerId) fetchNotifications(dealerId);
+    } catch (error) {
+      console.error("Re-upload error:", error);
+      alert(error?.response?.data?.message || "Failed to re-upload document");
+    } finally {
+      setDocumentLoading(false);
+    }
+  };
 
   useEffect(() => {
     const storedDealer = JSON.parse(localStorage.getItem("dealerData"));
     const storedCode = localStorage.getItem("dealerCode");
-    console.log("[DASHBOARD] dealerData:", storedDealer);
-    console.log("[DASHBOARD] dealerCode from localStorage:", storedCode);
     if (storedDealer || storedCode) {
       setProfileData((prev) => ({
         ...prev,
@@ -731,7 +835,7 @@ const weekLabels = [
 
                 <div className="bg-white rounded-3xl p-6 shadow-sm">
                   <p className="text-sm text-gray-500">
-                    Pending Verification
+                    Pending Applications
                   </p>
 
                   <h2 className="text-3xl font-bold text-[#0B2A4A] mt-3">
@@ -739,7 +843,7 @@ const weekLabels = [
                   </h2>
 
                   <p className="text-xs text-orange-500 mt-2">
-                    Needs attention
+                    Submitted for approval
                   </p>
                 </div>
 
@@ -787,9 +891,7 @@ const weekLabels = [
   {/* ADD CUSTOMER CARD */}
 
   <div
-    onClick={() =>
-      setShowAddCustomerModal(true)
-    }
+    onClick={() => { resetNewUserForm(); setShowAddCustomerModal(true); }}
     className="group relative overflow-hidden
     bg-gradient-to-r from-[#0B2A4A] to-[#123E68]
     rounded-3xl p-6 cursor-pointer
@@ -1167,27 +1269,7 @@ const weekLabels = [
 
         </div>
 
-        <div className="md:col-span-2">
-
-          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-            Complete Address <span className="text-red-500">*</span>
-          </label>
-
-          <textarea
-            rows={3}
-            placeholder="Enter Complete Address"
-            value={dealerUserData?.address || ""}
-            onChange={(e) =>
-              setDealerUserData({
-                ...dealerUserData,
-                address: e.target.value,
-              })
-            }
-            className="w-full rounded-2xl border border-gray-200
-            bg-[#F8FAFC] px-5 py-4 outline-none resize-none"
-          />
-
-        </div>
+        
 
       </div>
 
@@ -1548,71 +1630,68 @@ const weekLabels = [
     <div>
 
       <div className="text-center mb-8">
-
-        <div className="w-24 h-24 mx-auto rounded-full bg-[#EAFBF8]
-        flex items-center justify-center text-5xl">
-
-          ✅
-
-        </div>
-
-        <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">
-          Verify Customer Details
-        </h2>
-
-        <p className="text-gray-500 mt-3">
-          Please verify all details before final submission
-        </p>
-
+        <div className="w-24 h-24 mx-auto rounded-full bg-[#EAFBF8] flex items-center justify-center text-5xl">✅</div>
+        <h2 className="text-2xl font-bold text-[#0B2A4A] mt-6">{isEditMode ? 'Edit Customer Details' : 'Verify Customer Details'}</h2>
+        <p className="text-gray-500 mt-3">{isEditMode ? 'Update details and re-upload documents, then click Update' : 'Please verify all details before final submission'}</p>
       </div>
 
-      <div className="bg-[#F8FAFC] rounded-3xl p-6">
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-          <div>
-            <p className="text-xs text-gray-500">
-              Full Name
-            </p>
-
-            <p className="font-semibold text-[#0B2A4A]">
-              {dealerUserData?.name}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs text-gray-500">
-              Mobile
-            </p>
-
-            <p className="font-semibold text-[#0B2A4A]">
-              {dealerUserData?.mobile}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs text-gray-500">
-              PAN
-            </p>
-
-            <p className="font-semibold text-[#0B2A4A]">
-              {dealerUserData?.pan}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs text-gray-500">
-              Employment
-            </p>
-
-            <p className="font-semibold text-[#0B2A4A]">
-              {dealerUserData?.employmentType}
-            </p>
-          </div>
-
-        </div>
-
+      {/* CUSTOMER INFO */}
+      <div className="bg-[#F8FAFC] rounded-3xl p-6 mb-6 space-y-3">
+        <div><span className="font-semibold text-[#0B2A4A]">Name:</span> {dealerUserData?.name}</div>
+        <div><span className="font-semibold text-[#0B2A4A]">Mobile:</span> {dealerUserData?.mobile}</div>
+        <div><span className="font-semibold text-[#0B2A4A]">Email:</span> {dealerUserData?.email}</div>
+        <div><span className="font-semibold text-[#0B2A4A]">Employment:</span> {dealerUserData?.employmentType}</div>
+        
       </div>
+
+      {/* UPLOADED DOCUMENTS */}
+      <h3 className="text-lg font-bold text-[#0B2A4A] mb-4">Uploaded Documents</h3>
+      {uploadedDocuments.length === 0 ? (
+        <p className="text-sm text-gray-400">No documents uploaded.</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {uploadedDocuments.map((doc, index) => {
+            const type = doc.documentType || doc.type || "";
+            const label = docNames[type] || type.replace(/_/g, " ");
+            return (
+              <div key={index} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-xs text-gray-500">Document</p>
+                    <p className="font-semibold text-[#0B2A4A]">{label}</p>
+                  </div>
+                  <button
+                    onClick={() => openPreview(doc)}
+                    className="bg-[#0B2A4A] text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-[#081f36] transition"
+                  >
+                    View {label}
+                  </button>
+                </div>
+                {/* REUPLOAD */}
+                <div>
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    id={`reupload-${doc.documentId || index}`}
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (file) await handleReuploadDocument(doc.documentId, type, file);
+                    }}
+                  />
+                  <button
+                    onClick={() => document.getElementById(`reupload-${doc.documentId || index}`).click()}
+                    disabled={documentLoading}
+                    className="w-full bg-[#F4F6F9] hover:bg-[#EAFBF8] text-[#0B2A4A] py-2 rounded-xl text-xs font-semibold transition disabled:opacity-50"
+                  >
+                    📤 Re-upload {label}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
     </div>
 
@@ -1660,7 +1739,7 @@ const weekLabels = [
         px-8 py-3 rounded-2xl
         font-bold"
       >
-        Submit Documents
+        {isEditMode ? 'Update Details' : 'Submit Documents'}
       </button>
 
     )}
@@ -1696,23 +1775,60 @@ const weekLabels = [
                   </div>
 
                   <div className="space-y-4">
-                    {activityFeed.map(
-                      (item) => (
+                    {activityFeed.length === 0 ? (
+                      <p className="text-sm text-gray-400">No updates yet.</p>
+                    ) : (
+                      activityFeed.map((item) => (
                         <div
                           key={item.id}
-                          className="bg-[#F8FAFC]
-                          border border-gray-100
-                          rounded-2xl p-4"
+                          className={`rounded-2xl p-4 border ${
+                            item.type === "rejected"
+                              ? "bg-red-50 border-red-100"
+                              : item.type === "remark"
+                              ? "bg-amber-50 border-amber-100"
+                              : item.type === "approved"
+                              ? "bg-green-50 border-green-100"
+                              : "bg-[#F8FAFC] border-gray-100"
+                          }`}
                         >
-                          <p className="text-sm font-medium text-[#0B2A4A]">
+                          <p className={`text-sm font-medium ${
+                            item.type === "rejected" ? "text-red-700"
+                            : item.type === "remark" ? "text-amber-700"
+                            : item.type === "approved" ? "text-green-700"
+                            : "text-[#0B2A4A]"
+                          }`}>
                             {item.message}
                           </p>
+                          <p className="text-xs text-gray-400 mt-1">{item.time}</p>
 
-                          <p className="text-xs text-gray-400 mt-2">
-                            {item.time}
-                          </p>
+                          {/* REUPLOAD BUTTON for rejected or remarked docs */}
+                          {(item.type === "rejected" || item.type === "remark") && item.documentId && (
+                            <div className="mt-3">
+                              <input
+                                type="file"
+                                accept=".jpg,.jpeg,.png,.pdf"
+                                id={`live-reupload-${item.documentId}`}
+                                className="hidden"
+                                onChange={async (e) => {
+                                  const file = e.target.files[0];
+                                  if (file) await handleReuploadDocument(item.documentId, item.documentType, file, item.userId);
+                                }}
+                              />
+                              <button
+                                onClick={() => document.getElementById(`live-reupload-${item.documentId}`).click()}
+                                disabled={documentLoading}
+                                className={`w-full py-2 rounded-xl text-xs font-semibold transition disabled:opacity-50 ${
+                                  item.type === "rejected"
+                                    ? "bg-red-600 hover:bg-red-700 text-white"
+                                    : "bg-amber-500 hover:bg-amber-600 text-white"
+                                }`}
+                              >
+                                📤 Re-upload {item.label}
+                              </button>
+                            </div>
+                          )}
                         </div>
-                      )
+                      ))
                     )}
                   </div>
                 </div>
@@ -1818,17 +1934,8 @@ const weekLabels = [
       </div>
 
       <button
-  onClick={() => {
-    setActiveMenu("Dashboard");
-    setShowAddCustomerModal(true);
-    setDealerCurrentStep(1);
-  }}
-  className="bg-[#27D3C3]
-  hover:bg-[#1fb5a7]
-  text-[#0B2A4A]
-  px-6 py-3 rounded-2xl
-  font-bold transition-all duration-200
-  hover:scale-[1.02]"
+  onClick={() => { resetNewUserForm(); setShowAddCustomerModal(true); }}
+  className="bg-[#27D3C3] hover:bg-[#1fb5a7] text-[#0B2A4A] px-6 py-3 rounded-2xl font-bold transition-all duration-200 hover:scale-[1.02]"
 >
   + Add User
 </button>
@@ -2813,6 +2920,43 @@ const weekLabels = [
       </div>
       <div className="flex gap-4 mt-8">
         <button onClick={() => { setProfileData({ ...profileData, email: emailForm.newEmail }); setEmailForm({ ...emailForm, newEmail: "" }); setShowEmailModal(false); }} className="flex-1 bg-[#0B2A4A] text-white py-3 rounded-2xl font-semibold">Submit</button>
+      </div>
+    </div>
+  </div>
+)}
+
+{/* DOCUMENT PREVIEW MODAL */}
+
+{showPreviewModal && previewDoc && (
+  <div
+    className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+    onClick={() => { setShowPreviewModal(false); setPreviewUrl(null); setPreviewDoc(null); }}
+  >
+    <div
+      className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <p className="font-bold text-[#0B2A4A]">
+          {docNames[previewDoc.documentType || previewDoc.type] || (previewDoc.documentType || previewDoc.type || "Document").replace(/_/g, " ")}
+        </p>
+        <button
+          onClick={() => { setShowPreviewModal(false); setPreviewUrl(null); setPreviewDoc(null); }}
+          className="w-9 h-9 rounded-full bg-[#F4F6F9] hover:bg-red-100 flex items-center justify-center text-lg font-bold transition"
+        >
+          ✕
+        </button>
+      </div>
+      <div className="p-4 flex items-center justify-center bg-[#F8FAFC] min-h-[300px]">
+        {previewUrl ? (
+          previewUrl.startsWith("blob:") && previewDoc.fileType?.includes("pdf") ? (
+            <iframe src={previewUrl} title="Document Preview" className="w-full h-[400px] rounded-xl border-0" />
+          ) : (
+            <img src={previewUrl} alt="Document Preview" className="max-w-full max-h-[400px] object-contain rounded-xl" />
+          )
+        ) : (
+          <p className="text-gray-400 text-sm">Loading preview...</p>
+        )}
       </div>
     </div>
   </div>

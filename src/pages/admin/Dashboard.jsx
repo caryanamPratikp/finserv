@@ -147,11 +147,20 @@ const Dashboard = () => {
 
 
 
-  /* BANKS */
-
-  const [selectedBank, setSelectedBank] = useState(null);
-
-  const [banks, setBanks] = useState([]);
+    /* BANKS */
+
+  const [selectedBank, setSelectedBank] = useState(null);
+
+  const [banks, setBanks] = useState([]);
+
+  const [showAddBankModal, setShowAddBankModal] = useState(false);
+
+  const [newBankForm, setNewBankForm] = useState({
+    bankName: "",
+    representativeName: "",
+    contactNumber: "",
+    email: "",
+  });
 
 
 
@@ -721,10 +730,63 @@ const Dashboard = () => {
 
 
 
-  /* LOGOUT */
-
-
-
+    /* ADD BANK HANDLER */
+
+  const handleAddBank = async (e) => {
+    e.preventDefault();
+
+    if (!newBankForm.bankName.trim()) {
+      alert("Bank Name is required.");
+      return;
+    }
+    if (newBankForm.bankName.length > 50) {
+      alert("Bank Name must be less than 50 characters.");
+      return;
+    }
+    if (!newBankForm.representativeName.trim()) {
+      alert("Representative Name is required.");
+      return;
+    }
+    if (!newBankForm.contactNumber.trim()) {
+      alert("Contact Number is required.");
+      return;
+    }
+    if (!/^[6-9]\d{9}$/.test(newBankForm.contactNumber)) {
+      alert("Invalid Contact Number. Must be a 10-digit number starting with 6, 7, 8, or 9.");
+      return;
+    }
+    if (!newBankForm.email.trim()) {
+      alert("Email is required.");
+      return;
+    }
+    if (!/^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/.test(newBankForm.email)) {
+      alert("Invalid Email Format.");
+      return;
+    }
+
+    try {
+      await api.post("/admin/banks", newBankForm);
+      alert("Bank added successfully!");
+      setNewBankForm({
+        bankName: "",
+        representativeName: "",
+        contactNumber: "",
+        email: "",
+      });
+      setShowAddBankModal(false);
+      fetchAdminData();
+    } catch (err) {
+      console.error("Failed to add bank:", err);
+      alert(err.response?.data || "Failed to add bank. Please make sure the bank name, email, or contact number does not already exist.");
+    }
+  };
+
+
+
+  /* LOGOUT */
+
+
+
   const handleLogout = () => {
 
 
@@ -4179,26 +4241,21 @@ ${
 
 
 
-              <div className="bg-white rounded-3xl p-8 shadow-sm">
-
-
-
-                <h2 className="text-3xl font-bold text-[#0B2A4A]">
-
-                  Bank Management
-
-                </h2>
-
-
-
-                <p className="text-gray-500 mt-2">
-
-                  Manage partnered banks and loan statistics
-
-                </p>
-
-
-
+              <div className="bg-white rounded-3xl p-8 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <h2 className="text-3xl font-bold text-[#0B2A4A]">
+                    Bank Management
+                  </h2>
+                  <p className="text-gray-500 mt-2">
+                    Manage partnered banks and loan statistics
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowAddBankModal(true)}
+                  className="bg-[#27D3C3] hover:bg-[#1fb5a7] text-[#0B2A4A] font-bold px-6 py-3.5 rounded-2xl transition shadow-md hover:shadow-lg flex items-center justify-center gap-2 self-start sm:self-auto"
+                >
+                  <span className="text-xl font-bold">+</span> Add Bank
+                </button>
               </div>
 
 
@@ -4593,6 +4650,86 @@ ${
 
             </div>
 
+          )}
+
+          {showAddBankModal && (
+            <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white w-full max-w-lg rounded-3xl p-8 shadow-xl overflow-y-auto max-h-[90vh]">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-[#0B2A4A]">Add Partner Bank</h2>
+                    <p className="text-sm text-gray-500 mt-1">Register a new bank in the system</p>
+                  </div>
+                  <button
+                    onClick={() => setShowAddBankModal(false)}
+                    className="text-gray-400 hover:text-red-500 text-2xl transition"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <form onSubmit={handleAddBank} className="space-y-5">
+                  <div>
+                    <label className="text-sm font-semibold text-[#0B2A4A]">Bank Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. State Bank of India"
+                      value={newBankForm.bankName}
+                      onChange={(e) => setNewBankForm({ ...newBankForm, bankName: e.target.value })}
+                      className="w-full mt-2 bg-[#F8FAFC] border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:border-[#27D3C3] transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-[#0B2A4A]">Representative Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. John Doe"
+                      value={newBankForm.representativeName}
+                      onChange={(e) => setNewBankForm({ ...newBankForm, representativeName: e.target.value })}
+                      className="w-full mt-2 bg-[#F8FAFC] border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:border-[#27D3C3] transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-[#0B2A4A]">Contact Number</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 9876543210"
+                      value={newBankForm.contactNumber}
+                      onChange={(e) => setNewBankForm({ ...newBankForm, contactNumber: e.target.value })}
+                      className="w-full mt-2 bg-[#F8FAFC] border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:border-[#27D3C3] transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-[#0B2A4A]">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g. representative@bank.com"
+                      value={newBankForm.email}
+                      onChange={(e) => setNewBankForm({ ...newBankForm, email: e.target.value })}
+                      className="w-full mt-2 bg-[#F8FAFC] border border-gray-200 rounded-2xl px-5 py-4 outline-none focus:border-[#27D3C3] transition"
+                    />
+                  </div>
+                  <div className="flex gap-4 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddBankModal(false)}
+                      className="flex-1 border border-gray-200 text-gray-500 py-4 rounded-2xl font-semibold hover:bg-gray-50 transition"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 bg-[#0B2A4A] hover:bg-[#081f36] text-white py-4 rounded-2xl font-semibold transition"
+                    >
+                      Add Bank
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           )}
 
 

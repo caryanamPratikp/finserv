@@ -15,7 +15,6 @@ const Register = () => {
     mobile: "",
     email: "",
     password: "",
-    dealerCode: "",
   });
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,14 +38,12 @@ const Register = () => {
         toast.success("Dealer Registered 🎉");
         navigate("/");
       } else {
-        const trimmedDealerCode = form.dealerCode ? form.dealerCode.trim() : "";
         const res = await registerUser({
           fullName: form.fullName,
           email: form.email,
           mobileNumber: form.mobile,
           password: form.password,
-          registrationType: form.role, // Maps to "INDIVIDUAL"
-          dealerCode: trimmedDealerCode || null,
+          registrationType: form.role,
         });
 
         if (form.email && form.mobile) {
@@ -149,20 +146,6 @@ const Register = () => {
             />
           )}
         </div>
-
-        {form.role !== "DEALER" && (
-          <>
-            <label className="text-sm text-gray-600">Dealer Code</label>
-            <input
-              type="text"
-              name="dealerCode"
-              placeholder="Enter dealer code"
-              value={form.dealerCode}
-              onChange={handleChange}
-              className="w-full border rounded-lg px-3 py-3 mt-1 mb-4 bg-gray-50 outline-none"
-            />
-          </>
-        )}
 
         <button
           type="submit"

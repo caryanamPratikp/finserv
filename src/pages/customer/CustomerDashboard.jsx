@@ -132,6 +132,14 @@ const [selectedRemark, setSelectedRemark] =
 
 
 
+/* ACTION ALERT MODAL */
+
+
+
+const [showActionModal, setShowActionModal] = useState(false);
+
+
+
 /* USER REMARK */
 
 
@@ -338,9 +346,9 @@ const [residentialType, setResidentialType] =
 
           loanAmount: typeof userData.loanAmount === "string" 
 
-            ? parseFloat(userData.loanAmount.replace(/[^0-9.]/g, '')) 
+            ? parseFloat(userData.loanAmount.replace(/[^0-9.]/g, '')) || 0
 
-            : (userData.loanAmount || 500000),
+            : (userData.loanAmount || 0),
 
           address: userData.address || "Default Address",
 
@@ -394,9 +402,9 @@ const [residentialType, setResidentialType] =
 
             loanAmount: typeof userData.loanAmount === "string" 
 
-              ? parseFloat(userData.loanAmount.replace(/[^0-9.]/g, '')) 
+              ? parseFloat(userData.loanAmount.replace(/[^0-9.]/g, '')) || 0
 
-              : (userData.loanAmount || 500000),
+              : (userData.loanAmount || 0),
 
             address: userData.address || "Default Address",
 
@@ -631,7 +639,9 @@ const [residentialType, setResidentialType] =
 
 
       setCurrentStep((prev) => prev + 1);
-      window.location.reload();
+      // Refresh data from API without full page reload
+      await fetchData(false);
+
 
     } catch (err) {
 
@@ -741,7 +751,8 @@ const [residentialType, setResidentialType] =
             return {
               ...prev,
               applicationId: app.applicationNumber || "",
-              loanAmount: app.loanAmount ? `₹${app.loanAmount.toLocaleString()}` : "₹0",
+              loanAmount: (app.loanAmount != null && app.loanAmount > 0) ? `₹${Number(app.loanAmount).toLocaleString('en-IN')}` : (prev.loanAmount && prev.loanAmount !== "₹0" ? prev.loanAmount : null),
+              rawLoanAmount: app.loanAmount || 0,
               status: displayStatus,
               documentsUploaded: docs.length,
             };
@@ -751,7 +762,8 @@ const [residentialType, setResidentialType] =
             mobile: app.mobileNumber || userMobile || "",
             email: app.email || registrationUserObj?.email || "",
             applicationId: app.applicationNumber || "",
-            loanAmount: app.loanAmount ? `₹${app.loanAmount.toLocaleString()}` : "₹0",
+            loanAmount: (app.loanAmount != null && app.loanAmount > 0) ? `₹${Number(app.loanAmount).toLocaleString('en-IN')}` : null,
+            rawLoanAmount: app.loanAmount || 0,
             bank: "Yet to assign",
             car: "Mahindra Scorpio N",
             status: displayStatus,
@@ -799,9 +811,12 @@ const [residentialType, setResidentialType] =
 
 
         setDocumentsSubmitted(
-
-          app.status !== "PENDING"
-
+          app.status === "DOCUMENTS_SUBMITTED" ||
+          app.status === "DOCUMENTS_VERIFIED" ||
+          app.status === "SENT_TO_BANK" ||
+          app.status === "BANK_REVIEW" ||
+          app.status === "APPROVED" ||
+          app.status === "REJECTED"
         );
 
       } else {
@@ -1513,7 +1528,12 @@ const [uploadedDocuments, setUploadedDocuments] =
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs text-gray-500">Loan Amount</p>
-                      <h2 className="text-2xl font-bold text-[#0B2A4A] mt-2">{userData.loanAmount || "₹0"}</h2>
+                      <h2 className="text-2xl font-bold text-[#0B2A4A] mt-2">
+                        {userData.loanAmount
+                          ? userData.loanAmount
+                          : <span className="text-sm text-gray-400 font-normal">Not set yet</span>
+                        }
+                      </h2>
                     </div>
                     <div className="w-12 h-12 rounded-2xl bg-[#EAFBF8] flex items-center justify-center text-xl">💰</div>
                   </div>
@@ -1551,78 +1571,31 @@ const [uploadedDocuments, setUploadedDocuments] =
 
               </div>
 
-              {!documentsSubmitted && (
-
-
-
-                <div className="bg-gradient-to-r from-[#0B2A4A] to-[#123E68]
-
-                rounded-3xl p-6 text-white shadow-sm">
-
-
-
+              {!documentsSubmitted ? (
+                <div className="bg-gradient-to-r from-[#0B2A4A] to-[#123E68] rounded-3xl p-6 text-white shadow-sm">
                   <div className="flex items-center justify-between flex-wrap gap-5">
-
-
-
                     <div>
-
-
-
-                      <h2 className="text-xl font-bold">
-
-                        Upload Pending Documents
-
-                      </h2>
-
-
-
-                      <p className="text-gray-300 mt-2 text-sm">
-
-                        Complete your KYC and vehicle verification process.
-
-                      </p>
-
-
-
+                      <h2 className="text-xl font-bold">Upload Pending Documents</h2>
+                      <p className="text-gray-300 mt-2 text-sm">Complete your KYC and vehicle verification process.</p>
                     </div>
-
-
-
                     <button
-
-                      onClick={() =>
-
-                        setActiveMenu("Documents")
-
-                      }
-
-                      className="bg-[#27D3C3] hover:bg-[#1fb5a7]
-
-                      text-[#0B2A4A] px-5 py-3 rounded-2xl
-
-                      text-sm font-bold transition"
-
+                      onClick={() => setActiveMenu("Documents")}
+                      className="bg-[#27D3C3] hover:bg-[#1fb5a7] text-[#0B2A4A] px-5 py-3 rounded-2xl text-sm font-bold transition"
                     >
-
-
-
                       Upload Documents
-
-
-
                     </button>
-
-
-
                   </div>
-
-
-
                 </div>
-
-
-
+              ) : (
+                <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-3xl p-6 text-white shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center text-2xl">✅</div>
+                    <div>
+                      <h2 className="text-xl font-bold">Documents Submitted Successfully</h2>
+                      <p className="text-green-100 mt-1 text-sm">Your application is under review. Track progress in the Status tab.</p>
+                    </div>
+                  </div>
+                </div>
               )}
 
 
@@ -1645,7 +1618,88 @@ const [uploadedDocuments, setUploadedDocuments] =
 
             <div className="max-w-5xl mx-auto">
 
-
+              {/* IF SUBMITTED — show uploaded docs list instead of upload form */}
+              {documentsSubmitted ? (
+                <div className="space-y-6">
+                  <div className="bg-white rounded-3xl p-6 shadow-sm">
+                    <h1 className="text-2xl font-bold text-[#0B2A4A]">Your Documents</h1>
+                    <p className="text-sm text-gray-500 mt-1">Documents submitted for your loan application</p>
+                  </div>
+                  {uploadedDocuments.length === 0 ? (
+                    <div className="bg-white rounded-3xl p-8 shadow-sm text-center text-gray-400">No documents found.</div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                      {uploadedDocuments.map((doc, index) => {
+                        const docLabels = {
+                          PAN: "PAN Card", AADHAAR: "Aadhaar Card", AADHAAR_FRONT: "Aadhaar Front",
+                          AADHAAR_BACK: "Aadhaar Back", LIGHT_BILL: "Light Bill", RENTAL_AGREEMENT: "Rental Agreement",
+                          RC: "RC Copy", INSURANCE: "Insurance Copy", SALARY_SLIP: "Salary Slip",
+                          APPOINTMENT_LETTER: "Appointment Letter", ITR_RETURN: "ITR Copy",
+                          BANK_STATEMENT: "Bank Statement", CAR_FRONT_SIDE_PHOTO: "Car Front Photo",
+                          CAR_BACK_SIDE_PHOTO: "Car Back Photo", CHASSIS_NUMBER: "Chassis Number",
+                          ODOMETER_READING: "Odometer Reading",
+                        };
+                        const label = docLabels[doc.documentType] || (doc.documentType || "").replace(/_/g, " ");
+                        const statusColor = doc.status === "APPROVED" ? "bg-green-100 text-green-700"
+                          : doc.status === "REJECTED" ? "bg-red-100 text-red-700"
+                          : doc.status === "VERIFIED" ? "bg-blue-100 text-blue-700"
+                          : "bg-yellow-100 text-yellow-700";
+                        return (
+                          <div key={doc.documentId || index} className="bg-white border border-gray-200 rounded-3xl p-5 shadow-sm">
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <h4 className="font-bold text-[#0B2A4A]">{label}</h4>
+                                <p className="text-xs text-gray-400 mt-1">{doc.fileName || "Uploaded"}</p>
+                              </div>
+                              <span className={`text-xs font-bold px-3 py-1 rounded-full ${statusColor}`}>{doc.status || "PENDING"}</span>
+                            </div>
+                            {doc.remarks && (
+                              <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mb-3">
+                                <p className="text-xs text-amber-700 font-semibold">Admin Remark:</p>
+                                <p className="text-xs text-gray-700 mt-0.5">{doc.remarks}</p>
+                              </div>
+                            )}
+                            <button
+                              onClick={async () => {
+                                try {
+                                  const res = await fetch(`${api.defaults.baseURL}/documents/preview/${doc.documentId}`, {
+                                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                                  });
+                                  const blob = await res.blob();
+                                  const url = URL.createObjectURL(blob);
+                                  setPreviewUrl(url);
+                                  setSelectedDocument(doc);
+                                  setShowPreviewModal(true);
+                                } catch (e) { alert("Failed to load preview"); }
+                              }}
+                              className="w-full bg-[#0B2A4A] hover:bg-[#081f36] text-white py-2.5 rounded-2xl text-sm font-semibold transition"
+                            >
+                              View {label}
+                            </button>
+                            {doc.status === "REJECTED" && (
+                              <div className="mt-2">
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf" id={`reup-${doc.documentId}`} className="hidden"
+                                  onChange={async (e) => {
+                                    const file = e.target.files[0];
+                                    if (file) await handleReuploadDocument(doc.documentId, doc.documentType, file);
+                                  }}
+                                />
+                                <button onClick={() => document.getElementById(`reup-${doc.documentId}`).click()}
+                                  disabled={documentLoading}
+                                  className="w-full bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-2xl text-sm font-semibold transition disabled:opacity-50"
+                                >
+                                  📤 Re-upload {label}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ) : (
+              <div>
 
               {/* HEADER */}
 
@@ -1909,7 +1963,7 @@ const [uploadedDocuments, setUploadedDocuments] =
 
             placeholder="Enter Loan Amount"
 
-            value={userData?.loanAmount || ""}
+            value={userData?.loanAmount ? String(userData.loanAmount).replace(/[^0-9.]/g, '') : ""}
 
             onChange={(e) =>
 
@@ -2077,39 +2131,7 @@ const [uploadedDocuments, setUploadedDocuments] =
 
 
 
-        <div className="md:col-span-2">
-
-          <label className="text-sm font-semibold text-[#0B2A4A] block mb-2">
-
-            Complete Address <span className="text-red-500">*</span>
-
-          </label>
-
-          <textarea
-
-            rows={3}
-
-            placeholder="Enter Complete Address"
-
-            value={userData?.address || ""}
-
-            onChange={(e) =>
-
-              setUserData((prev) => ({
-
-                ...prev,
-
-                address: e.target.value,
-
-              }))
-
-            }
-
-            className="w-full rounded-2xl border border-gray-200 bg-[#F8FAFC] px-5 py-4 outline-none resize-none"
-
-          />
-
-        </div>
+        
 
 
 
@@ -3107,17 +3129,7 @@ const [uploadedDocuments, setUploadedDocuments] =
 
 
 
-      <div>
-
-        <span className="font-semibold text-[#0B2A4A]">
-
-          Address:
-
-        </span>{" "}
-
-        {userData?.address}
-
-      </div>
+      
 
 
 
@@ -3396,8 +3408,9 @@ const [uploadedDocuments, setUploadedDocuments] =
 
 
       setActiveMenu("Status");
+      // Refresh data to reflect submitted status
+      await fetchData(true);
 
-      window.location.reload();
 
 
 
@@ -3461,157 +3474,50 @@ const [uploadedDocuments, setUploadedDocuments] =
 
 
 
-{/* DOCUMENT PREVIEW MODAL */}
 
-
-
-{showPreviewModal && selectedDocument && (
-
-
-
-  <div
-
-    className="fixed inset-0 z-50
-
-    bg-black/50 backdrop-blur-sm
-
-    flex items-center justify-center p-4"
-
-  >
-
-
-
-    <div
-
-      className="bg-white w-full max-w-4xl
-
-      rounded-3xl p-6 shadow-2xl"
-
-    >
-
-
-
-      {/* HEADER */}
-
-
-
-      <div className="flex items-center justify-between mb-5">
-
-
-
-        <div>
-
-
-
-          <h2 className="text-2xl font-bold text-[#0B2A4A]">
-
-            {selectedDocument.type}
-
-          </h2>
-
-
-
-          <p className="text-sm text-gray-500 mt-1">
-
-            Document Preview
-
-          </p>
-
-
-
-        </div>
-
-
-
-        <button
-
-          onClick={() =>
-
-            setShowPreviewModal(false)
-
-          }
-
-          className="w-10 h-10 rounded-full
-
-          bg-[#F4F6F9]
-
-          hover:bg-gray-200
-
-          flex items-center justify-center"
-
-        >
-
-          ✕
-
-        </button>
-
-
-
-      </div>
-
-
-
-      {/* PREVIEW */}
-
-
-
-      {/* PREVIEW */}
-
-<div
-
-  className="border border-gray-200
-
-  rounded-2xl overflow-hidden
-
-  h-[500px]"
-
->
-
-  {previewUrl && (
-
-  <div className="border border-gray-200 rounded-2xl overflow-hidden h-[500px]">
-
-  {previewUrl && (
-
-    <iframe
-
-      src={previewUrl}
-
-      className="w-full h-full"
-
-      title="Document Preview"
-
-    />
-
-  )}
-
-</div>
-
-)}
-
-</div>
-
-
-
-    </div>
-
-
-
-  </div>
-
-
-
-)}
-
-
+            </div>
+            )}
 
             </div>
 
-
-
           )}
 
+{/* DOCUMENT PREVIEW MODAL */}
 
+{showPreviewModal && selectedDocument && (
+
+  <div
+    className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+    onClick={() => setShowPreviewModal(false)}
+  >
+    <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h2 className="text-xl font-bold text-[#0B2A4A]">
+            {({
+              PAN: "PAN Card", AADHAAR: "Aadhaar Card", LIGHT_BILL: "Light Bill",
+              RENTAL_AGREEMENT: "Rental Agreement", RC: "RC Copy", INSURANCE: "Insurance Copy",
+              SALARY_SLIP: "Salary Slip", APPOINTMENT_LETTER: "Appointment Letter",
+              ITR_RETURN: "ITR Copy", BANK_STATEMENT: "Bank Statement",
+              CAR_FRONT_SIDE_PHOTO: "Car Front Photo", CAR_BACK_SIDE_PHOTO: "Car Back Photo",
+            })[selectedDocument.documentType] || (selectedDocument.documentType || "Document").replace(/_/g, " ")}
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">Document Preview</p>
+        </div>
+        <button onClick={() => setShowPreviewModal(false)} className="w-10 h-10 rounded-full bg-[#F4F6F9] hover:bg-gray-200 flex items-center justify-center">✕</button>
+      </div>
+      <div className="border border-gray-200 rounded-2xl overflow-hidden flex items-center justify-center bg-[#F8FAFC] min-h-[300px]">
+        {previewUrl && (
+          selectedDocument.fileType?.includes("pdf") ? (
+            <iframe src={previewUrl} className="w-full h-[400px]" title="Document Preview" />
+          ) : (
+            <img src={previewUrl} alt="Document Preview" className="max-w-full max-h-[400px] object-contain" />
+          )
+        )}
+      </div>
+    </div>
+  </div>
+)}
 
           {/* STATUS */}
 
@@ -3906,28 +3812,86 @@ const [uploadedDocuments, setUploadedDocuments] =
 
 
 
-                        <div
+                        {/* Smart Status Dot */}
+                        {(() => {
+                          const hasActionNeeded = active && (
+                            uploadedDocuments.filter(d => d.status === "REJECTED" || d.remarks).length > 0 ||
+                            userRemarkData.hasRemark
+                          );
 
-                          className={`w-2.5 h-2.5 rounded-full
+                          const rejectedDocs = uploadedDocuments.filter(d => d.status === "REJECTED");
+                          const remarkDocs = uploadedDocuments.filter(d => d.remarks && d.status !== "REJECTED");
+                          const docNames = {
+                            PAN: "PAN Card", AADHAAR: "Aadhaar Card", AADHAAR_FRONT: "Aadhaar Front",
+                            AADHAAR_BACK: "Aadhaar Back", LIGHT_BILL: "Light Bill", RENTAL_AGREEMENT: "Rental Agreement",
+                            RC: "RC Book", INSURANCE: "Vehicle Insurance", SALARY_SLIP: "Salary Slip",
+                            APPOINTMENT_LETTER: "Appointment Letter", ITR_RETURN: "ITR Copy",
+                            BANK_STATEMENT: "Bank Statement", CAR_FRONT_SIDE_PHOTO: "Car Front Photo",
+                            CAR_BACK_SIDE_PHOTO: "Car Back Photo",
+                          };
 
+                          if (hasActionNeeded) {
+                            return (
+                              <div className="relative group ml-1">
+                                {/* Ping animation */}
+                                <span className="absolute inset-0 w-3 h-3 bg-red-500 rounded-full animate-ping opacity-75" />
+                                {/* Solid red dot */}
+                                <span className="relative block w-3 h-3 bg-red-500 rounded-full cursor-pointer" />
 
+                                {/* Hover Tooltip */}
+                                <div className="absolute left-5 top-1/2 -translate-y-1/2 z-50 hidden group-hover:block w-72 pointer-events-none">
+                                  <div className="bg-[#0B2A4A] text-white rounded-2xl shadow-2xl p-4 text-left border border-red-400/30">
+                                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/10">
+                                      <span className="text-base">⚠️</span>
+                                      <p className="text-sm font-bold text-red-300">Action Required</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                      {userRemarkData.hasRemark && (
+                                        <div className="flex items-start gap-2">
+                                          <span className="text-amber-400 text-xs mt-0.5">💬</span>
+                                          <p className="text-xs text-gray-300 leading-relaxed">
+                                            <span className="font-semibold text-white">Admin Remark:</span> {userRemarkData.remark}
+                                          </p>
+                                        </div>
+                                      )}
+                                      {rejectedDocs.map((doc, i) => (
+                                        <div key={i} className="flex items-start gap-2">
+                                          <span className="text-red-400 text-xs mt-0.5">❌</span>
+                                          <p className="text-xs text-gray-300 leading-relaxed">
+                                            <span className="font-semibold text-white">{docNames[doc.documentType] || doc.documentType}</span> rejected
+                                            {doc.remarks && <span className="text-gray-400"> — {doc.remarks}</span>}
+                                          </p>
+                                        </div>
+                                      ))}
+                                      {remarkDocs.map((doc, i) => (
+                                        <div key={i} className="flex items-start gap-2">
+                                          <span className="text-amber-400 text-xs mt-0.5">💬</span>
+                                          <p className="text-xs text-gray-300 leading-relaxed">
+                                            <span className="font-semibold text-white">{docNames[doc.documentType] || doc.documentType}:</span> {doc.remarks}
+                                          </p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                  {/* Arrow */}
+                                  <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 w-3 h-3 bg-[#0B2A4A] rotate-45 border-l border-b border-red-400/30" />
+                                </div>
+                              </div>
+                            );
+                          }
 
-                          ${
-
-                            completed
-
-                              ? "bg-[#27D3C3]"
-
-                              : active
-
-                              ? "bg-[#27D3C3] animate-pulse"
-
-                              : "bg-gray-300"
-
-                          }`}
-
-                        ></div>
-
+                          return (
+                            <div
+                              className={`w-2.5 h-2.5 rounded-full ${
+                                completed
+                                  ? "bg-[#27D3C3]"
+                                  : active
+                                  ? "bg-[#27D3C3] animate-pulse"
+                                  : "bg-gray-300"
+                              }`}
+                            />
+                          );
+                        })()}
 
 
                       </div>
@@ -4816,6 +4780,143 @@ const [uploadedDocuments, setUploadedDocuments] =
 
 
 
+)}
+
+{/* ACTION REQUIRED POPUP MODAL */}
+{showActionModal && (
+  <div
+    className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+    onClick={() => setShowActionModal(false)}
+  >
+    <div
+      className="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* HEADER */}
+      <div className="bg-gradient-to-r from-red-600 to-red-500 px-7 py-5 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-xl">⚠️</div>
+          <div>
+            <h2 className="text-xl font-bold text-white">Action Required</h2>
+            <p className="text-red-100 text-sm mt-0.5">Please resolve the following issues</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setShowActionModal(false)}
+          className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/40 flex items-center justify-center text-white font-bold transition"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* BODY */}
+      <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+
+        {/* Application-level remark */}
+        {userRemarkData.hasRemark && (
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-amber-500 text-lg mt-0.5">💬</span>
+              <div>
+                <p className="text-sm font-bold text-[#0B2A4A] mb-1">Admin Remark on Application</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{userRemarkData.remark}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Rejected documents */}
+        {uploadedDocuments.filter(d => d.status === "REJECTED").length > 0 && (
+          <div>
+            <p className="text-sm font-bold text-red-600 mb-3 flex items-center gap-2">
+              <span>❌</span> Documents Rejected — Re-upload Required
+            </p>
+            <div className="space-y-3">
+              {uploadedDocuments.filter(d => d.status === "REJECTED").map((doc, idx) => {
+                const docNames = {
+                  PAN: "PAN Card", AADHAAR: "Aadhaar Card", AADHAAR_FRONT: "Aadhaar Front",
+                  AADHAAR_BACK: "Aadhaar Back", LIGHT_BILL: "Light Bill", RENTAL_AGREEMENT: "Rental Agreement",
+                  RC: "RC Book", INSURANCE: "Vehicle Insurance", SALARY_SLIP: "Salary Slip",
+                  APPOINTMENT_LETTER: "Appointment Letter", ITR_RETURN: "ITR Copy",
+                  BANK_STATEMENT: "Bank Statement", CAR_FRONT_SIDE_PHOTO: "Car Front Photo",
+                  CAR_BACK_SIDE_PHOTO: "Car Back Photo",
+                };
+                const name = docNames[doc.documentType] || doc.documentType;
+                return (
+                  <div key={idx} className="bg-red-50 border border-red-100 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-bold text-[#0B2A4A] text-sm">{name}</span>
+                      <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">REJECTED</span>
+                    </div>
+                    {doc.remarks && (
+                      <p className="text-xs text-gray-600 flex items-start gap-1.5">
+                        <span className="text-red-400 mt-0.5">💬</span>
+                        <span><span className="font-semibold">Reason: </span>{doc.remarks}</span>
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Documents with remarks (not rejected) */}
+        {uploadedDocuments.filter(d => d.remarks && d.status !== "REJECTED").length > 0 && (
+          <div>
+            <p className="text-sm font-bold text-amber-600 mb-3 flex items-center gap-2">
+              <span>💬</span> Documents with Admin Remarks
+            </p>
+            <div className="space-y-3">
+              {uploadedDocuments.filter(d => d.remarks && d.status !== "REJECTED").map((doc, idx) => {
+                const docNames = {
+                  PAN: "PAN Card", AADHAAR: "Aadhaar Card", AADHAAR_FRONT: "Aadhaar Front",
+                  AADHAAR_BACK: "Aadhaar Back", LIGHT_BILL: "Light Bill", RENTAL_AGREEMENT: "Rental Agreement",
+                  RC: "RC Book", INSURANCE: "Vehicle Insurance", SALARY_SLIP: "Salary Slip",
+                  APPOINTMENT_LETTER: "Appointment Letter", ITR_RETURN: "ITR Copy",
+                  BANK_STATEMENT: "Bank Statement", CAR_FRONT_SIDE_PHOTO: "Car Front Photo",
+                  CAR_BACK_SIDE_PHOTO: "Car Back Photo",
+                };
+                const name = docNames[doc.documentType] || doc.documentType;
+                return (
+                  <div key={idx} className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-bold text-[#0B2A4A] text-sm">{name}</span>
+                      <span className="bg-amber-100 text-amber-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{doc.status}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 flex items-start gap-1.5">
+                      <span className="text-amber-400 mt-0.5">💬</span>
+                      <span><span className="font-semibold">Remark: </span>{doc.remarks}</span>
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* No issues */}
+        {!userRemarkData.hasRemark &&
+          uploadedDocuments.filter(d => d.status === "REJECTED" || d.remarks).length === 0 && (
+          <div className="text-center py-6 text-gray-400">
+            <p className="text-4xl mb-3">✅</p>
+            <p className="font-semibold">No pending actions</p>
+            <p className="text-sm mt-1">Your application is progressing smoothly.</p>
+          </div>
+        )}
+
+        {/* Go to Documents CTA */}
+        {uploadedDocuments.filter(d => d.status === "REJECTED").length > 0 && (
+          <button
+            onClick={() => { setShowActionModal(false); setActiveMenu("Documents"); }}
+            className="w-full bg-[#0B2A4A] hover:bg-[#123E68] text-white py-3.5 rounded-2xl font-semibold transition mt-2 flex items-center justify-center gap-2"
+          >
+            <span>📤</span> Go to Documents to Re-upload
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
 )}
 
         </div>
